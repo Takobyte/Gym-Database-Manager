@@ -27,17 +27,17 @@ public class GymDAO {
 
 	}
 	
-	public List<Member> searchMembers(String lastName) throws Exception {
+	public List<Member> searchMembers(String name) throws Exception {
 		List<Member> list = new ArrayList<>();
 
 		PreparedStatement myStmt = null;
 		ResultSet myRs = null;
 
 		try {
-			lastName += "%";
-			myStmt = myConn.prepareStatement("select * from Member where last_name like ?");
+			name += "%";
+			myStmt = myConn.prepareStatement("select * from Member where name like ?");
 			
-			myStmt.setString(1, lastName);
+			myStmt.setString(1, name);
 			
 			myRs = myStmt.executeQuery();
 			
