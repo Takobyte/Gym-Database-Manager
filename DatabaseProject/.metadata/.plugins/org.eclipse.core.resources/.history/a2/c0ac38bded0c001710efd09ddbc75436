@@ -1,0 +1,62 @@
+package UI;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import java.awt.FlowLayout;
+import java.awt.BorderLayout;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class MemberUI extends Login{
+
+	private JFrame memberWindow;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void MemberUI() {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					MemberUI window = new MemberUI();
+					window.memberWindow.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public MemberUI() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		memberWindow = new JFrame();
+		memberWindow.setTitle("Member");
+		memberWindow.setBounds(100, 100, 450, 300);
+		memberWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		memberWindow.getContentPane().setLayout(new BorderLayout(0, 0));
+		
+		JPanel panel = new JPanel();
+		memberWindow.getContentPane().add(panel, BorderLayout.NORTH);
+		
+		JButton btnBack = new JButton("Back");
+		btnBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				memberWindow.dispose();
+				loginVisibility();
+			}
+		});
+		panel.add(btnBack);
+	}
+}

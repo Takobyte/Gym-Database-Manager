@@ -1,0 +1,125 @@
+package UI;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import java.awt.FlowLayout;
+import java.awt.BorderLayout;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.JTable;
+import javax.swing.JRadioButton;
+import javax.swing.SwingConstants;
+
+import core.Member;
+
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+
+public class ManagerUI extends Login{
+
+	private JFrame managerWindow;
+	private JTextField txtbName;
+	private JTable tableMember;
+	
+	
+
+	/**
+	 * Launch the application.
+	 */
+	public static void managerUI() {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ManagerUI window = new ManagerUI();
+					window.managerWindow.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public ManagerUI() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		managerWindow = new JFrame();
+		managerWindow.setTitle("Manager");
+		managerWindow.setBounds(100, 100, 450, 300);
+		managerWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		managerWindow.getContentPane().setLayout(null);
+		
+		JPanel panelBtmMember = new JPanel();
+		panelBtmMember.setBounds(0, 228, 434, 33);
+		managerWindow.getContentPane().add(panelBtmMember);
+		
+		JButton btnBack = new JButton("Back");
+		btnBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				managerWindow.dispose();
+				loginVisibility();
+			}
+		});
+		panelBtmMember.add(btnBack);
+		
+		JPanel panelTopMember = new JPanel();
+		panelTopMember.setBounds(0, 0, 434, 33);
+		FlowLayout fl_panelTopMember = (FlowLayout) panelTopMember.getLayout();
+		fl_panelTopMember.setAlignment(FlowLayout.LEFT);
+		managerWindow.getContentPane().add(panelTopMember);
+		
+		JLabel lblEnterLastName = new JLabel("Enter Last Name:");
+		panelTopMember.add(lblEnterLastName);
+		
+		txtbName = new JTextField();
+		panelTopMember.add(txtbName);
+		txtbName.setColumns(10);
+		
+		JButton btnSearch = new JButton("Search");
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// Get last name from text field
+				
+				try {
+					String name = txtbName.getText();
+					List<Member> members = null;
+					if (name != null && name.trim().length() > 0) {
+						members = gymDAO.searchEmployees(name);
+					}
+					else {
+						members = gymDAO.get
+					}
+					
+					
+				}
+				catch (Exception exc) {
+					JOptionPane.showMessageDialog(ManagerUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
+				}
+				
+			}
+		});
+		panelTopMember.add(btnSearch);
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Employee List", "Member List"}));
+		panelTopMember.add(comboBox);
+		
+		tableMember = new JTable();
+		tableMember.setBounds(21, 32, 390, 195);
+		managerWindow.getContentPane().add(tableMember);
+	}
+}

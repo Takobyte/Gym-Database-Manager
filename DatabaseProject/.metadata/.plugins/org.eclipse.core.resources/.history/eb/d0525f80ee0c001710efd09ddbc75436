@@ -1,0 +1,93 @@
+package UI;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import java.awt.FlowLayout;
+import java.awt.BorderLayout;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JTable;
+import javax.swing.JRadioButton;
+
+public class ManagerMemberUI extends Login{
+
+	private JFrame memberWindow;
+	private JTextField txtBoxLastName;
+	private JTable tableMember;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void managerMemberUI() {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ManagerMemberUI window = new ManagerMemberUI();
+					window.memberWindow.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public ManagerMemberUI() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		memberWindow = new JFrame();
+		memberWindow.setTitle("Member");
+		memberWindow.setBounds(100, 100, 450, 300);
+		memberWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		memberWindow.getContentPane().setLayout(new BorderLayout(0, 0));
+		
+		JPanel panelBtmMember = new JPanel();
+		memberWindow.getContentPane().add(panelBtmMember, BorderLayout.SOUTH);
+		
+		JButton btnBack = new JButton("Back");
+		btnBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				memberWindow.dispose();
+				loginVisibility();
+			}
+		});
+		panelBtmMember.add(btnBack);
+		
+		JPanel panelTopMember = new JPanel();
+		FlowLayout fl_panelTopMember = (FlowLayout) panelTopMember.getLayout();
+		fl_panelTopMember.setAlignment(FlowLayout.LEFT);
+		memberWindow.getContentPane().add(panelTopMember, BorderLayout.NORTH);
+		
+		JLabel lblEnterLastName = new JLabel("Enter Last Name:");
+		panelTopMember.add(lblEnterLastName);
+		
+		txtBoxLastName = new JTextField();
+		panelTopMember.add(txtBoxLastName);
+		txtBoxLastName.setColumns(10);
+		
+		JButton btnSearch = new JButton("Search");
+		panelTopMember.add(btnSearch);
+		
+		tableMember = new JTable();
+		memberWindow.getContentPane().add(tableMember, BorderLayout.CENTER);
+		
+		JPanel panel = new JPanel();
+		memberWindow.getContentPane().add(panel, BorderLayout.WEST);
+		
+		JLabel lblTasks = new JLabel("List of Tasks");
+		lblTasks.setToolTipText("");
+		panel.add(lblTasks);
+	}
+}

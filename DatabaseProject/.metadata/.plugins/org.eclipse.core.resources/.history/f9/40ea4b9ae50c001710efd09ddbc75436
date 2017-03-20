@@ -1,0 +1,30 @@
+package jdbc;
+
+import java.sql.*;
+
+public class Driver {
+
+	public static void main(String[] args) {
+		try {
+			// Get a connection to database
+			Connection myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sakila", "root", "Qw4295915.");
+			
+			
+			// Create a statement
+			Statement myStmt = myConn.createStatement();
+			
+			// Execute SQL query
+			ResultSet myRs = myStmt.executeQuery("SELECT * FROM sakila.actor");
+			
+			// Process the result set
+			while (myRs.next()) {
+				System.out.println(myRs.getString("actor_id") + ", " + myRs.getString("first_name") + ", " + myRs.getString("last_name"));
+			}
+		}
+		catch (Exception exc) {
+			exc.printStackTrace();
+		}
+
+	}
+
+}

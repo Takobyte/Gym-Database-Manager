@@ -1,0 +1,120 @@
+package UI;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JRadioButton;
+import javax.swing.JTextPane;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.FlowLayout;
+import javax.swing.JTextField;
+import org.eclipse.wb.swing.FocusTraversalOnArray;
+
+import jdbc.GymDAO;
+
+import java.awt.Component;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class Login extends JFrame {
+
+	private JPanel loginMainBox;
+	private JTextField loginUserText;
+	private JTextField loginPassText;
+	
+	private GymDAO gymDAO;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Login frame = new Login();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public Login() {
+		
+		try {
+			gymDAO = new GymDAO();
+		}
+		catch (Exception exc){
+			JOptionPane.showMessageDialog(this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		setTitle("Login");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 213, 165);
+		loginMainBox = new JPanel();
+		loginMainBox.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(loginMainBox);
+		loginMainBox.setLayout(new BorderLayout(0, 0));
+		
+		JPanel loginPanel = new JPanel();
+		loginMainBox.add(loginPanel);
+		loginPanel.setLayout(null);
+		
+		JLabel lblUsername = new JLabel("Username: ");
+		lblUsername.setBounds(5, 8, 77, 14);
+		loginPanel.add(lblUsername);
+		
+		loginUserText = new JTextField();
+		loginUserText.setBounds(92, 5, 86, 20);
+		loginPanel.add(loginUserText);
+		loginUserText.setColumns(10);
+		
+		JLabel loginPswrdLbl = new JLabel("Password: ");
+		loginPswrdLbl.setBounds(5, 30, 77, 14);
+		loginPanel.add(loginPswrdLbl);
+		
+		loginPassText = new JTextField();
+		loginPassText.setBounds(92, 27, 86, 20);
+		loginPanel.add(loginPassText);
+		loginPassText.setColumns(10);
+		
+		JComboBox loginUserComboBox = new JComboBox();
+		loginUserComboBox.setBounds(5, 55, 173, 20);
+		loginPanel.add(loginUserComboBox);
+		loginUserComboBox.setModel(new DefaultComboBoxModel(new String[] {"Member", "Employee", "Manager"}));
+		loginUserComboBox.setMaximumRowCount(3);
+		loginUserComboBox.setToolTipText("");
+		
+		JButton loginBtnSignIn = new JButton("Sign in");
+		loginBtnSignIn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (loginUserComboBox.getSelectedItem().equals("Member")) {
+				ManagerUI manager = new ManagerUI();
+				manager.managerUI();
+				setVisible(false);
+				}
+				
+			}
+		});
+		loginBtnSignIn.setBounds(5, 84, 86, 23);
+		loginPanel.add(loginBtnSignIn);
+		loginPanel.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{lblUsername, loginUserText}));
+		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{loginUserText, loginPassText, loginUserComboBox, loginBtnSignIn}));
+	}
+	public void loginVisibility() {
+		setVisible(true);
+	}
+}
