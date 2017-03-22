@@ -113,7 +113,6 @@ public class Login extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				if (loginUserComboBox.getSelectedItem().equals("Member")) {
 				ManagerUI manager = new ManagerUI();
-//				System.out.println("2");
 				manager.managerUI();
 				setVisible(false);
 				}

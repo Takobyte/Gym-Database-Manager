@@ -106,7 +106,7 @@ public class ManagerUI extends Login{
 							members = gymDAO.getAllMembers();
 						}
 						for (Member temp : members) {
-							System.out.println(temp.getBranchId());
+							System.out.println(temp);
 						}
 						
 						ManagerTableModel model = new ManagerTableModel(members);
@@ -114,6 +114,8 @@ public class ManagerUI extends Login{
 					}
 					else if (comboBoxMng.getSelectedItem() == "Employee List") {
 						// stub
+						// need to make gymDAO.searchEmployee(name)
+						//              gymDAO.getAllEmployee();
 					}
 				}
 				catch (Exception exc) {
@@ -140,6 +142,15 @@ public class ManagerUI extends Login{
 		managerWindow.getContentPane().add(toolBarMng, BorderLayout.WEST);
 		
 		JButton btnInsertMng = new JButton("Insert");
+		btnInsertMng.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// create dialog
+				ManagerAddMember dialog = new ManagerAddMember(ManagerUI.this, gymDAO);
+
+				// show dialog
+				dialog.setVisible(true);
+			}
+		});
 		btnInsertMng.setBorderPainted(false);
 		toolBarMng.add(btnInsertMng);
 		
@@ -150,5 +161,20 @@ public class ManagerUI extends Login{
 		JButton btnEditMng = new JButton("Edit");
 		btnEditMng.setBorderPainted(false);
 		toolBarMng.add(btnEditMng);
+	}
+
+	public void refreshMemberView() {
+		try {
+			List<Member> members = gymDAO.getAllMembers();
+
+			// create the model and update the "table"
+			ManagerTableModel model = new ManagerTableModel(members);
+
+			tableMember.setModel(model);
+		} catch (Exception exc) {
+			JOptionPane.showMessageDialog(this, "Error: " + exc, "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		
 	}
 }

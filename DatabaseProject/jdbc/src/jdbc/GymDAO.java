@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import core.Employee;
 import core.Member;
 
 public class GymDAO {
@@ -19,6 +20,56 @@ public class GymDAO {
 
 	}
 	
+	public List<Employee> searchEmployees(String name) throws Exception {
+		try {
+			//stub
+			return null;
+		}
+		finally {
+			//stub
+		}
+	}
+	
+	public List<Employee> getAllEmployees() throws Exception {
+		try {
+			//stub
+			return null;
+		}
+		finally {
+			//stub
+		}
+	}
+	
+	private Employee convertRowToEmployee(ResultSet myRs) throws SQLException {
+		return null;
+	}
+	
+	public void addMember(Member member) throws Exception {
+		PreparedStatement myStmt = null;
+		
+		try {
+			// prepare statement
+			myStmt = myConn.prepareStatement("insert into members"
+					+ " (name, telephone, dob, address, std_exp_date, prm_exp_date, branch_id)"
+					+ " values (?, ?, ?, ?, ?, ?, ?)");
+			
+			// set parameters
+			myStmt.setString(1, member.getName());
+			myStmt.setString(2, member.getTelephone());
+			myStmt.setDate(3, new java.sql.Date(member.getDob().getTime()));
+			myStmt.setString(4, member.getAddr());
+			myStmt.setDate(5, new java.sql.Date(member.getStdExpDate().getTime()));
+			myStmt.setDate(6, new java.sql.Date(member.getPrmExpDate().getTime()));
+			myStmt.setInt(7, member.getBranchId());
+			
+			// execute SQL
+			myStmt.executeUpdate();
+		}
+		finally {
+			close(myStmt,null);
+		}
+	}
+	
 	public List<Member> searchMembers(String name) throws Exception {
 		List<Member> list = new ArrayList<>();
 
@@ -26,7 +77,7 @@ public class GymDAO {
 		ResultSet myRs = null;
 
 		try {
-			name += "%";
+			name = "%" + name + "%";
 			myStmt = myConn.prepareStatement("select * from Members where name like ?");
 			
 			myStmt.setString(1, name);
