@@ -151,7 +151,7 @@ public class ManagerAddMember extends JDialog {
 						try {
 							saveMember();
 						} catch (ParseException e1) {
-							// TODO Auto-generated catch block
+							// Auto-generated catch block
 							e1.printStackTrace();
 						}
 					}
@@ -168,7 +168,7 @@ public class ManagerAddMember extends JDialog {
 		}
 	}
 	protected void saveEmployee() {
-		//stub
+		//stub TODO:
 	}
 	
 	protected void saveMember() throws ParseException {

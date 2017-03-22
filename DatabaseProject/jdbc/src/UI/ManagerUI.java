@@ -109,12 +109,12 @@ public class ManagerUI extends Login{
 							System.out.println(temp);
 						}
 						
-						ManagerTableModel model = new ManagerTableModel(members);
+						ManagerMemberTableModel model = new ManagerMemberTableModel(members);
 						tableMember.setModel(model);
 					}
 					else if (comboBoxMng.getSelectedItem() == "Employee List") {
 						// stub
-						// need to make gymDAO.searchEmployee(name)
+						// TODO: need to make gymDAO.searchEmployee(name)
 						//              gymDAO.getAllEmployee();
 					}
 				}
@@ -162,13 +162,22 @@ public class ManagerUI extends Login{
 		btnEditMng.setBorderPainted(false);
 		toolBarMng.add(btnEditMng);
 	}
+	
+	public void refreshEmployeeView() {
+		try {
+			//stub
+			//TODO:
+		} catch (Exception exc) {
+			
+		}
+	}
 
 	public void refreshMemberView() {
 		try {
 			List<Member> members = gymDAO.getAllMembers();
 
 			// create the model and update the "table"
-			ManagerTableModel model = new ManagerTableModel(members);
+			ManagerMemberTableModel model = new ManagerMemberTableModel(members);
 
 			tableMember.setModel(model);
 		} catch (Exception exc) {
