@@ -1,16 +1,18 @@
 package core;
 
+import java.util.Date;
+
 public class Member {
 	private int mid;
 	private String name;
-	private int telephone;
-	private String dob;
+	private String telephone;
+	private Date dob;
 	private String addr;
-	private String stdExpDate;
-	private String prmExpDate;
+	private Date stdExpDate;
+	private Date prmExpDate;
 	private int branchId;
 	
-	public Member(int mid, String name, int telephone, String dob, String addr, String stdExpDate, String prmExpDate, int branchId) {
+	public Member(int mid, String name, String telephone, Date dob, String addr, Date stdExpDate, Date prmExpDate, int branchId) {
 		this.mid = mid;
 		this.name = name;
 		this.telephone = telephone;
@@ -38,19 +40,19 @@ public class Member {
 		this.name = name;
 	}
 
-	public int getTelephone() {
+	public String getTelephone() {
 		return telephone;
 	}
 
-	public void setTelephone(int telephone) {
+	public void setTelephone(String telephone) {
 		this.telephone = telephone;
 	}
 
-	public String getDob() {
+	public Date getDob() {
 		return dob;
 	}
 
-	public void setDob(String dob) {
+	public void setDob(Date dob) {
 		this.dob = dob;
 	}
 
@@ -62,19 +64,19 @@ public class Member {
 		this.addr = addr;
 	}
 
-	public String getStdExpDate() {
+	public Date getStdExpDate() {
 		return stdExpDate;
 	}
 
-	public void setStdExpDate(String stdExpDate) {
+	public void setStdExpDate(Date stdExpDate) {
 		this.stdExpDate = stdExpDate;
 	}
 
-	public String getPrmExpDate() {
+	public Date getPrmExpDate() {
 		return prmExpDate;
 	}
 
-	public void setPrmExpDate(String prmExpDate) {
+	public void setPrmExpDate(Date prmExpDate) {
 		this.prmExpDate = prmExpDate;
 	}
 

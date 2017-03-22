@@ -53,8 +53,10 @@ public class Login extends JFrame {
 	 * Create the frame.
 	 */
 	public Login() {
+		setResizable(false);
 		
 		try {
+//			System.out.println("1");
 			gymDAO = new GymDAO();
 		}
 		catch (Exception exc){
@@ -63,36 +65,44 @@ public class Login extends JFrame {
 		
 		setTitle("Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 213, 165);
+		setBounds(100, 100, 337, 186);
 		loginMainBox = new JPanel();
 		loginMainBox.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(loginMainBox);
 		loginMainBox.setLayout(new BorderLayout(0, 0));
 		
 		JPanel loginPanel = new JPanel();
-		loginMainBox.add(loginPanel);
+		loginMainBox.add(loginPanel, BorderLayout.CENTER);
 		loginPanel.setLayout(null);
 		
 		JLabel lblUsername = new JLabel("Username: ");
-		lblUsername.setBounds(5, 8, 77, 14);
+		lblUsername.setBounds(5, 8, 96, 14);
 		loginPanel.add(lblUsername);
 		
 		loginUserText = new JTextField();
-		loginUserText.setBounds(92, 5, 86, 20);
+		loginUserText.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String userName = loginUserText.getText();
+				if (userName.isEmpty()) {
+					
+				}
+			}
+		});
+		loginUserText.setBounds(102, 5, 119, 20);
 		loginPanel.add(loginUserText);
 		loginUserText.setColumns(10);
 		
 		JLabel loginPswrdLbl = new JLabel("Password: ");
-		loginPswrdLbl.setBounds(5, 30, 77, 14);
+		loginPswrdLbl.setBounds(5, 30, 96, 14);
 		loginPanel.add(loginPswrdLbl);
 		
 		loginPassText = new JTextField();
-		loginPassText.setBounds(92, 27, 86, 20);
+		loginPassText.setBounds(102, 27, 119, 20);
 		loginPanel.add(loginPassText);
 		loginPassText.setColumns(10);
 		
-		JComboBox loginUserComboBox = new JComboBox();
-		loginUserComboBox.setBounds(5, 55, 173, 20);
+		final JComboBox loginUserComboBox = new JComboBox();
+		loginUserComboBox.setBounds(5, 55, 216, 20);
 		loginPanel.add(loginUserComboBox);
 		loginUserComboBox.setModel(new DefaultComboBoxModel(new String[] {"Member", "Employee", "Manager"}));
 		loginUserComboBox.setMaximumRowCount(3);
@@ -103,6 +113,7 @@ public class Login extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				if (loginUserComboBox.getSelectedItem().equals("Member")) {
 				ManagerUI manager = new ManagerUI();
+//				System.out.println("2");
 				manager.managerUI();
 				setVisible(false);
 				}

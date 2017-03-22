@@ -21,15 +21,17 @@ import core.Member;
 
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JScrollPane;
+import javax.swing.SpringLayout;
+import javax.swing.JToolBar;
 
 public class ManagerUI extends Login{
 
 	private JFrame managerWindow;
-	private JTextField txtbName;
+	private JTextField txtbNameMng;
 	private JTable tableMember;
+	private JComboBox comboBoxMng;
 	
-	
-
 	/**
 	 * Launch the application.
 	 */
@@ -59,13 +61,12 @@ public class ManagerUI extends Login{
 	private void initialize() {
 		managerWindow = new JFrame();
 		managerWindow.setTitle("Manager");
-		managerWindow.setBounds(100, 100, 450, 300);
+		managerWindow.setBounds(100, 100, 503, 324);
 		managerWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		managerWindow.getContentPane().setLayout(null);
+		managerWindow.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JPanel panelBtmMember = new JPanel();
-		panelBtmMember.setBounds(0, 228, 434, 33);
-		managerWindow.getContentPane().add(panelBtmMember);
+		managerWindow.getContentPane().add(panelBtmMember, BorderLayout.SOUTH);
 		
 		JButton btnBack = new JButton("Back");
 		btnBack.addActionListener(new ActionListener() {
@@ -77,53 +78,76 @@ public class ManagerUI extends Login{
 		panelBtmMember.add(btnBack);
 		
 		JPanel panelTopMember = new JPanel();
-		panelTopMember.setBounds(0, 0, 434, 33);
 		FlowLayout fl_panelTopMember = (FlowLayout) panelTopMember.getLayout();
 		fl_panelTopMember.setAlignment(FlowLayout.LEFT);
-		managerWindow.getContentPane().add(panelTopMember);
+		managerWindow.getContentPane().add(panelTopMember, BorderLayout.NORTH);
 		
-		JLabel lblEnterLastName = new JLabel("Enter Last Name:");
-		panelTopMember.add(lblEnterLastName);
+		JLabel lblEnterName = new JLabel("Enter Name:");
+		panelTopMember.add(lblEnterName);
 		
-		txtbName = new JTextField();
-		panelTopMember.add(txtbName);
-		txtbName.setColumns(10);
+		txtbNameMng = new JTextField();
+		panelTopMember.add(txtbNameMng);
+		txtbNameMng.setColumns(10);
 		
-		JButton btnSearch = new JButton("Search");
-		btnSearch.addActionListener(new ActionListener() {
+		JButton btnSearchMng = new JButton("Search");
+		btnSearchMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Get last name from text field
-				
 				try {
-					String name = txtbName.getText();
-					List<Member> members = null;
-					if (name != null && name.trim().length() > 0) {
-						members = gymDAO.searchMembers(name);
+					if (comboBoxMng.getSelectedItem() == "Member List") {
+						String name = txtbNameMng.getText();
+						List<Member> members = null;
+						if (name != null && name.trim().length() > 0) {
+							members = gymDAO.searchMembers(name);
+						}
+						else {
+							members = gymDAO.getAllMembers();
+						}
+						for (Member temp : members) {
+							System.out.println(temp.getName());
+						}
+						
+						ManagerTableModel model = new ManagerTableModel(members);
+						tableMember.setModel(model);
+						tableMember.createDefaultColumnsFromModel();
 					}
-					else {
-						members = gymDAO.getAllMembers();
+					else if (comboBoxMng.getSelectedItem() == "Employee List") {
+						// stub
 					}
-					
-					for (Member temp : members) {
-						System.out.println(temp);
-					}
-				
-					
 				}
 				catch (Exception exc) {
 					JOptionPane.showMessageDialog(ManagerUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
-				}
-				
+				}	
 			}
 		});
-		panelTopMember.add(btnSearch);
+		panelTopMember.add(btnSearchMng);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Employee List", "Member List"}));
-		panelTopMember.add(comboBox);
+		comboBoxMng = new JComboBox();
+		comboBoxMng.setModel(new DefaultComboBoxModel(new String[] {"Employee List", "Member List"}));
+		panelTopMember.add(comboBoxMng);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setEnabled(false);
+		managerWindow.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		
 		tableMember = new JTable();
-		tableMember.setBounds(21, 32, 390, 195);
-		managerWindow.getContentPane().add(tableMember);
+		tableMember.setToolTipText("");
+		scrollPane.setViewportView(tableMember);
+		
+		JToolBar toolBarMng = new JToolBar();
+		toolBarMng.setOrientation(SwingConstants.VERTICAL);
+		managerWindow.getContentPane().add(toolBarMng, BorderLayout.WEST);
+		
+		JButton btnInsertMng = new JButton("Insert");
+		btnInsertMng.setBorderPainted(false);
+		toolBarMng.add(btnInsertMng);
+		
+		JButton btnDeleteMng = new JButton("Delete");
+		btnDeleteMng.setBorderPainted(false);
+		toolBarMng.add(btnDeleteMng);
+		
+		JButton btnEditMng = new JButton("Edit");
+		btnEditMng.setBorderPainted(false);
+		toolBarMng.add(btnEditMng);
 	}
 }
