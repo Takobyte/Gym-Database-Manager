@@ -53,14 +53,16 @@ class ManagerTableModel extends AbstractTableModel{
 		case 1:
 			return tempMember.getName();
 		case 2:
-			return tempMember.getDob();
+			return tempMember.getTelephone();
 		case 3:
-			return tempMember.getAddr();
+			return tempMember.getDob();
 		case 4:
-			return tempMember.getStdExpDate();
+			return tempMember.getAddr();
 		case 5:
-			return tempMember.getPrmExpDate();
+			return tempMember.getStdExpDate();
 		case 6:
+			return tempMember.getPrmExpDate();
+		case 7:
 			return tempMember.getBranchId();
 		default:
 			return tempMember.getName();

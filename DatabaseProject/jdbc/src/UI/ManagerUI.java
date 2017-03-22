@@ -8,6 +8,7 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
@@ -16,6 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.JTable;
 import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 
 import core.Member;
 
@@ -104,12 +106,11 @@ public class ManagerUI extends Login{
 							members = gymDAO.getAllMembers();
 						}
 						for (Member temp : members) {
-							System.out.println(temp.getName());
+							System.out.println(temp.getBranchId());
 						}
 						
 						ManagerTableModel model = new ManagerTableModel(members);
 						tableMember.setModel(model);
-						tableMember.createDefaultColumnsFromModel();
 					}
 					else if (comboBoxMng.getSelectedItem() == "Employee List") {
 						// stub
