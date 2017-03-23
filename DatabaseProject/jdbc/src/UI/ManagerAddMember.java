@@ -24,17 +24,20 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.awt.event.ActionEvent;
+import javax.swing.JComboBox;
+import com.toedter.calendar.JDateChooser;
+import javax.swing.SwingConstants;
 
 public class ManagerAddMember extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textFieldName;
 	private JTextField textFieldTel;
-	private JTextField textFieldDob;
 	private JTextField textFieldAddr;
-	private JTextField textFieldStdExp;
-	private JTextField textFieldPrmExp;
 	private JTextField textFieldBranch;
+	private JDateChooser dateChooserDob;
+	private JDateChooser dateChooserStd;
+	private JDateChooser dateChooserPrm;
 	
 	private ManagerUI managerUI;
 	private GymDAO gymDAO;
@@ -53,7 +56,7 @@ public class ManagerAddMember extends JDialog {
 	 */
 	public ManagerAddMember() {
 		setTitle("Add Member");
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 450, 290);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -68,13 +71,13 @@ public class ManagerAddMember extends JDialog {
 				FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
+				RowSpec.decode("default:grow"),
 				FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,
 				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
+				RowSpec.decode("default:grow"),
 				FormSpecs.RELATED_GAP_ROWSPEC,
-				FormSpecs.DEFAULT_ROWSPEC,
+				RowSpec.decode("default:grow"),
 				FormSpecs.RELATED_GAP_ROWSPEC,
 				FormSpecs.DEFAULT_ROWSPEC,}));
 		{
@@ -100,9 +103,9 @@ public class ManagerAddMember extends JDialog {
 			contentPanel.add(lblDateOfBirth, "2, 6, right, default");
 		}
 		{
-			textFieldDob = new JTextField();
-			contentPanel.add(textFieldDob, "4, 6, fill, default");
-			textFieldDob.setColumns(10);
+			dateChooserDob = new JDateChooser();
+			BorderLayout bl_dateChooserDob = (BorderLayout) dateChooserDob.getLayout();
+			contentPanel.add(dateChooserDob, "4, 6, fill, default");
 		}
 		{
 			JLabel lblAddress = new JLabel("Address:");
@@ -118,18 +121,16 @@ public class ManagerAddMember extends JDialog {
 			contentPanel.add(lblStdExpDate, "2, 10, right, default");
 		}
 		{
-			textFieldStdExp = new JTextField();
-			contentPanel.add(textFieldStdExp, "4, 10, fill, default");
-			textFieldStdExp.setColumns(10);
+			dateChooserStd = new JDateChooser();
+			contentPanel.add(dateChooserStd, "4, 10, fill, center");
 		}
 		{
 			JLabel lblPrmExpDate = new JLabel("Prm Exp Date:");
 			contentPanel.add(lblPrmExpDate, "2, 12, right, default");
 		}
 		{
-			textFieldPrmExp = new JTextField();
-			contentPanel.add(textFieldPrmExp, "4, 12, fill, default");
-			textFieldPrmExp.setColumns(10);
+			dateChooserPrm = new JDateChooser();
+			contentPanel.add(dateChooserPrm, "4, 12, fill, center");
 		}
 		{
 			JLabel lblBranch = new JLabel("Branch");
@@ -162,29 +163,28 @@ public class ManagerAddMember extends JDialog {
 			}
 			{
 				JButton cancelButton = new JButton("Cancel");
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						// close dialog
+						setVisible(false);
+						dispose();
+					}
+				});
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
 			}
 		}
 	}
-	protected void saveEmployee() {
-		//stub TODO:
-	}
 	
 	protected void saveMember() throws ParseException {
-		String dateText;
 		
 		// get the employee info from gui
 		String name = textFieldName.getText();
 		String telephone = textFieldTel.getText();
-		dateText = textFieldDob.getText();
-		DateFormat sdf = new SimpleDateFormat("MMMM d, yyyy");
-		Date dob = sdf.parse(dateText);
+		Date dob = dateChooserDob.getDate();
 		String addr = textFieldAddr.getText();
-		dateText = textFieldStdExp.getText();
-		Date stdExpDate = sdf.parse(dateText);
-		dateText = textFieldPrmExp.getText();
-		Date prmExpDate = sdf.parse(dateText);
+		Date stdExpDate = dateChooserStd.getDate();
+		Date prmExpDate = dateChooserPrm.getDate();
 		int branchId = Integer.parseInt(textFieldBranch.getText());
 
 		Member tempMember = new Member(0, name, telephone, dob, addr, stdExpDate, prmExpDate, branchId);

@@ -1,12 +1,12 @@
 package core;
 import java.util.Date;
-public class Class_purchases {
+public class Class_purchase {
  String pid;
  String gid;
  String mid;
  float amt_paid;
  Date paid_date;
-public Class_purchases(String pid, String gid, String mid, float amt_paid, Date paid_date) {
+public Class_purchase(String pid, String gid, String mid, float amt_paid, Date paid_date) {
 	this.pid = pid;
 	this.gid = gid;
 	this.mid = mid;

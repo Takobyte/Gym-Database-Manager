@@ -1,11 +1,11 @@
 package core;
 
-public class Activity_rooms {
+public class Activity_room {
 	String rid;
 	String descriptive_name;
 	int capacity;
 	String branch_id;
-	public Activity_rooms(String rid, String descriptive_name, int capacity, String branch_id) {
+	public Activity_room(String rid, String descriptive_name, int capacity, String branch_id) {
 		this.rid = rid;
 		this.descriptive_name = descriptive_name;
 		this.capacity = capacity;

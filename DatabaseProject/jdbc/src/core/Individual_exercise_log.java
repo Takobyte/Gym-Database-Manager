@@ -1,14 +1,14 @@
 package core;
 import java.util.Date;
 
-public class Individual_exercise_logs {
+public class Individual_exercise_log {
 String log_no;
 String mid;
 String title;
 String individual_activity_name ;
 Date start_time;
 Date end_time;
-public Individual_exercise_logs(String log_no, String mid, String title, String individual_activity_name,
+public Individual_exercise_log(String log_no, String mid, String title, String individual_activity_name,
 		Date start_time, Date end_time) {
 	this.log_no = log_no;
 	this.mid = mid;

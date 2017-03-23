@@ -21,32 +21,56 @@ public class GymDAO {
 	}
 	
 	public List<Employee> searchEmployees(String name) throws Exception {
+		List<Employee> list = new ArrayList<>();
+		PreparedStatement myStmt = null;
+		ResultSet myRs = null;
 		try {
-			//TODO:
-			//stub
-			return null;
+			name = "%" + name + "%";
+			myStmt = myConn.prepareStatement("select * from Employees where name like ?");
+			myStmt.setString(1, name);
+			myRs = myStmt.executeQuery();
+			while (myRs.next()) {
+				Employee tempEmployee = convertRowToEmployee(myRs);
+				list.add(tempEmployee);
+			}
+			return list;
 		}
 		finally {
-			//TODO:
-			//stub
+			close(myStmt, myRs);
 		}
 	}
 	
 	public List<Employee> getAllEmployees() throws Exception {
-		try {
-			//TODO:
-			//stub
-			return null;
+		List<Employee> list = new ArrayList<>();
+		Statement myStmt = null;
+		ResultSet myRs = null;
+		try {	
+			myStmt = myConn.createStatement();
+			myRs = myStmt.executeQuery("select * from Employees");
+			while (myRs.next()) {
+				Employee tempEmployee = convertRowToEmployee(myRs);
+				list.add(tempEmployee);
+			}
+			return list;		
 		}
 		finally {
-			//TODO:
-			//stub
+			close(myStmt, myRs);
 		}
 	}
 	
 	private Employee convertRowToEmployee(ResultSet myRs) throws SQLException {
-		//TODO
-		return null;
+		int emp_id = myRs.getInt("emp_id");
+		String name = myRs.getString("name");
+		String job_title= myRs.getString("job_title");
+		int salary= myRs.getInt("salary");
+		String addr = myRs.getString("address");
+		Date dob = myRs.getDate("dob");
+		int telephone = myRs.getInt("telephone");
+		int months_to_next_service=myRs.getInt("months_to_next_service");
+		boolean manager_flag = myRs.getBoolean("manager_flag");
+		boolean instructor_flag = myRs.getBoolean("instructor_flag");
+		Employee tempEmployee = new Employee(emp_id,name,job_title,salary,addr,dob,telephone,months_to_next_service,manager_flag,instructor_flag);
+		return tempEmployee;
 	}
 	
 	public void addMember(Member member) throws Exception {

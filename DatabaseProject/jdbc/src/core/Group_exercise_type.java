@@ -1,10 +1,10 @@
 package core;
 
-public class Group_exercise_types {
+public class Group_exercise_type {
 String pid;
 String name;
 Float monthly_fee;
-public Group_exercise_types(String pid, String name, Float monthly_fee) {
+public Group_exercise_type(String pid, String name, Float monthly_fee) {
 	this.pid = pid;
 	this.name = name;
 	this.monthly_fee = monthly_fee;

@@ -1,11 +1,11 @@
 package core;
 
-public class Suppliers {
+public class Supplier {
 	String sid;
 	String name;
 	int telephone;
 	String address;
-	public Suppliers(String sid, String name, int telephone, String address) {
+	public Supplier(String sid, String name, int telephone, String address) {
 		this.sid = sid;
 		this.name = name;
 		this.telephone = telephone;

@@ -1,13 +1,13 @@
 package core;
 import java.util.Date;
-public class Group_classes {
+public class Group_class {
 	String gid;
 	String class_name;
 	float price_for_std_member;
 	Date start_time;
 	Date end_time;
 	String rid;
-	public Group_classes(String gid, String class_name, float price_for_std_member, Date start_time, Date end_time,
+	public Group_class(String gid, String class_name, float price_for_std_member, Date start_time, Date end_time,
 			String rid) {
 		this.gid = gid;
 		this.class_name = class_name;

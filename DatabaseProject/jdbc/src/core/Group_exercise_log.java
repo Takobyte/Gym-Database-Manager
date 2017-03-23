@@ -1,11 +1,11 @@
 package core;
 
-public class Group_exercise_logs {
+public class Group_exercise_log {
 String log_no;
 String title;
 String mid;
 String gid;
-public Group_exercise_logs(String log_no, String title, String mid, String gid) {
+public Group_exercise_log(String log_no, String title, String mid, String gid) {
 	this.log_no = log_no;
 	this.title = title;
 	this.mid = mid;

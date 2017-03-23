@@ -127,4 +127,5 @@ public class Login extends JFrame {
 	public void loginVisibility() {
 		setVisible(true);
 	}
+	
 }

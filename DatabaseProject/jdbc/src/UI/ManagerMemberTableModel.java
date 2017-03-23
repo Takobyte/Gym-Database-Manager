@@ -48,7 +48,6 @@ class ManagerMemberTableModel extends AbstractTableModel{
 
 		switch (col) {
 		case 0:
-//			System.out.println(tempMember.getMid());
 			return tempMember.getMid();
 		case 1:
 			return tempMember.getName();

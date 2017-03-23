@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
+import java.awt.Container;
+
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -19,6 +21,7 @@ import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
+import core.Employee;
 import core.Member;
 
 import javax.swing.JComboBox;
@@ -31,7 +34,7 @@ public class ManagerUI extends Login{
 
 	private JFrame managerWindow;
 	private JTextField txtbNameMng;
-	private JTable tableMember;
+	private JTable tableManager;
 	private JComboBox comboBoxMng;
 	
 	/**
@@ -79,6 +82,23 @@ public class ManagerUI extends Login{
 		});
 		panelBtmMember.add(btnBack);
 		
+		JButton btnExit = new JButton("Exit");
+		btnExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// close dialog
+				setVisible(false);
+				managerWindow.dispose();
+				Container tempFrame = btnExit.getParent();
+				do {
+					tempFrame = tempFrame.getParent();
+				} while (!(tempFrame instanceof JFrame)); {
+					((JFrame) tempFrame).dispose();
+				}
+				
+			}
+		});
+		panelBtmMember.add(btnExit);
+		
 		JPanel panelTopMember = new JPanel();
 		FlowLayout fl_panelTopMember = (FlowLayout) panelTopMember.getLayout();
 		fl_panelTopMember.setAlignment(FlowLayout.LEFT);
@@ -110,12 +130,23 @@ public class ManagerUI extends Login{
 						}
 						
 						ManagerMemberTableModel model = new ManagerMemberTableModel(members);
-						tableMember.setModel(model);
+						tableManager.setModel(model);
 					}
 					else if (comboBoxMng.getSelectedItem() == "Employee List") {
-						// stub
-						// TODO: need to make gymDAO.searchEmployee(name)
-						//              gymDAO.getAllEmployee();
+						String name = txtbNameMng.getText();
+						List<Employee> employees = null;
+						if (name != null && name.trim().length() > 0) {
+							employees = gymDAO.searchEmployees(name);
+						}
+						else {
+							employees= gymDAO.getAllEmployees();
+						}
+						for (Employee temp :employees) {
+							System.out.println(temp);
+						}
+						
+						ManagerEmployeeTableModel model = new ManagerEmployeeTableModel(employees);
+						tableManager.setModel(model);
 					}
 				}
 				catch (Exception exc) {
@@ -133,9 +164,9 @@ public class ManagerUI extends Login{
 		scrollPane.setEnabled(false);
 		managerWindow.getContentPane().add(scrollPane, BorderLayout.CENTER);
 		
-		tableMember = new JTable();
-		tableMember.setToolTipText("");
-		scrollPane.setViewportView(tableMember);
+		tableManager = new JTable();
+		tableManager.setToolTipText("");
+		scrollPane.setViewportView(tableManager);
 		
 		JToolBar toolBarMng = new JToolBar();
 		toolBarMng.setOrientation(SwingConstants.VERTICAL);
@@ -144,31 +175,53 @@ public class ManagerUI extends Login{
 		JButton btnInsertMng = new JButton("Insert");
 		btnInsertMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// create dialog
-				ManagerAddMember dialog = new ManagerAddMember(ManagerUI.this, gymDAO);
-
-				// show dialog
-				dialog.setVisible(true);
+				if (comboBoxMng.getSelectedItem().equals("Member List")) {
+					// create dialog
+					ManagerAddMember dialog = new ManagerAddMember(ManagerUI.this, gymDAO);
+	
+					// show dialog
+					dialog.setVisible(true);
+				}
+				else if (comboBoxMng.getSelectedItem().equals("Employee List")) {
+					// create dialog
+					ManagerAddEmployee dialog = new ManagerAddEmployee(ManagerUI.this, gymDAO);
+	
+					// show dialog
+					dialog.setVisible(true);
+				}
 			}
 		});
 		btnInsertMng.setBorderPainted(false);
 		toolBarMng.add(btnInsertMng);
 		
 		JButton btnDeleteMng = new JButton("Delete");
+		btnDeleteMng.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//TODO: Delete a selected Object using comboBoxMng.getSelectedItem()
+			}
+		});
 		btnDeleteMng.setBorderPainted(false);
 		toolBarMng.add(btnDeleteMng);
 		
 		JButton btnEditMng = new JButton("Edit");
+		btnEditMng.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//TODO: Edit a selected Object using comboBoxMng.getSelectedItem()
+			}
+		});
 		btnEditMng.setBorderPainted(false);
 		toolBarMng.add(btnEditMng);
 	}
 	
 	public void refreshEmployeeView() {
 		try {
-			//stub
-			//TODO:
+			List<Employee> employees = gymDAO.getAllEmployees();
+			// create the model and update the "table"
+			ManagerEmployeeTableModel model = new ManagerEmployeeTableModel(employees);
+			tableManager.setModel(model);
 		} catch (Exception exc) {
-			
+			JOptionPane.showMessageDialog(this, "Error: " + exc, "Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -179,7 +232,7 @@ public class ManagerUI extends Login{
 			// create the model and update the "table"
 			ManagerMemberTableModel model = new ManagerMemberTableModel(members);
 
-			tableMember.setModel(model);
+			tableManager.setModel(model);
 		} catch (Exception exc) {
 			JOptionPane.showMessageDialog(this, "Error: " + exc, "Error",
 					JOptionPane.ERROR_MESSAGE);

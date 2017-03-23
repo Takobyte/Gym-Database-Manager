@@ -1,11 +1,11 @@
 package core;
 
-public class Main_equipment_rooms {
+public class Main_equipment_room {
 String rid;
 String descriptive_name;
 int capacity;
 String branchId;
-public Main_equipment_rooms(String rid, String descriptive_name, int capacity, String branchId) {
+public Main_equipment_room(String rid, String descriptive_name, int capacity, String branchId) {
 	this.rid = rid;
 	this.descriptive_name = descriptive_name;
 	this.capacity = capacity;
