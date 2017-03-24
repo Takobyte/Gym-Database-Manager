@@ -28,7 +28,7 @@ import javax.swing.JComboBox;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.SwingConstants;
 
-public class ManagerAddMember extends JDialog {
+public class ManagerMemberDialogue extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textFieldName;
@@ -41,20 +41,41 @@ public class ManagerAddMember extends JDialog {
 	
 	private ManagerUI managerUI;
 	private GymDAO gymDAO;
+	
+	private Member previousMember = null;
+	private boolean updateMode = false;
+	
 	/**
 	 * Launch the application.
 	 */
-	public ManagerAddMember(ManagerUI theManagerUI, GymDAO theGymDAO) {
+	public ManagerMemberDialogue(ManagerUI theManagerUI, GymDAO theGymDAO, Member previousMember, boolean updateMode) {
 		this();
 		managerUI = theManagerUI;
 		gymDAO = theGymDAO;
+		this.previousMember = previousMember;
+		this.updateMode = updateMode;
+		if (updateMode) {
+			setTitle("Update Member");
+			populateGui(previousMember);
+		}
 		
+	}
+	
+	private void populateGui(Member member) {
+
+		textFieldName.setText(member.getName());
+		textFieldTel.setText(member.getTelephone());
+		dateChooserDob.setDate(member.getDob());
+		textFieldAddr.setText(member.getAddr());
+		dateChooserStd.setDate(member.getStdExpDate());
+		dateChooserStd.setDate(member.getPrmExpDate());
+		textFieldBranch.setText(String.valueOf(member.getBranchId()));
 	}
 
 	/**
 	 * Create the dialog.
 	 */
-	public ManagerAddMember() {
+	public ManagerMemberDialogue() {
 		setTitle("Add Member");
 		setBounds(100, 100, 450, 290);
 		getContentPane().setLayout(new BorderLayout());
@@ -187,11 +208,31 @@ public class ManagerAddMember extends JDialog {
 		Date prmExpDate = dateChooserPrm.getDate();
 		int branchId = Integer.parseInt(textFieldBranch.getText());
 
-		Member tempMember = new Member(0, name, telephone, dob, addr, stdExpDate, prmExpDate, branchId);
+		Member tempMember = null;
+		
+		if (updateMode) {
+			tempMember = previousMember;
+			tempMember.setName(name);
+			tempMember.setTelephone(telephone);
+			tempMember.setDob(dob);
+			tempMember.setAddr(addr);
+			tempMember.setStdExpDate(stdExpDate);
+			tempMember.setPrmExpDate(prmExpDate);
+			tempMember.setBranchId(branchId);
+			
+		}
+		else {
+			tempMember = new Member(0, name, telephone, dob, addr, stdExpDate, prmExpDate, branchId);
+		}
 		
 		try {
 			// save to the database
-			gymDAO.addMember(tempMember);
+			if (updateMode) {
+				gymDAO.updateMember(tempMember);
+			}
+			else {
+				gymDAO.addMember(tempMember);
+			}
 
 			// close dialog
 			setVisible(false);
@@ -202,17 +243,19 @@ public class ManagerAddMember extends JDialog {
 			
 			// show success message
 			JOptionPane.showMessageDialog(managerUI,
-					"Employee added succesfully.",
-					"Employee Added",
+					"Member added succesfully.",
+					"Member Added",
 					JOptionPane.INFORMATION_MESSAGE);
 		} catch (Exception exc) {
 			JOptionPane.showMessageDialog(
 					managerUI,
-					"Error saving employee: "
+					"Error saving member: "
 							+ exc.getMessage(), "Error",
 					JOptionPane.ERROR_MESSAGE);
 		}
 		
 	}
+	
+	
 
 }

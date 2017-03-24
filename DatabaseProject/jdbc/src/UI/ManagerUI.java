@@ -177,14 +177,14 @@ public class ManagerUI extends Login{
 			public void actionPerformed(ActionEvent e) {
 				if (comboBoxMng.getSelectedItem().equals("Member List")) {
 					// create dialog
-					ManagerAddMember dialog = new ManagerAddMember(ManagerUI.this, gymDAO);
+					ManagerMemberDialogue dialog = new ManagerMemberDialogue(ManagerUI.this, gymDAO, null, false);
 	
 					// show dialog
 					dialog.setVisible(true);
 				}
 				else if (comboBoxMng.getSelectedItem().equals("Employee List")) {
 					// create dialog
-					ManagerAddEmployee dialog = new ManagerAddEmployee(ManagerUI.this, gymDAO);
+					ManagerEmployeeDialogue dialog = new ManagerEmployeeDialogue(ManagerUI.this, gymDAO);
 	
 					// show dialog
 					dialog.setVisible(true);
@@ -197,7 +197,12 @@ public class ManagerUI extends Login{
 		JButton btnDeleteMng = new JButton("Delete");
 		btnDeleteMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO: Delete a selected Object using comboBoxMng.getSelectedItem()
+				if (comboBoxMng.getSelectedItem().equals("Member List")) {
+					//TODO: Delete a selected Object using tableManger.getSelectedItem()
+				}
+				else if (comboBoxMng.getSelectedItem().equals("Employee List")) {
+					//TODO: Do the same as member
+				}
 			}
 		});
 		btnDeleteMng.setBorderPainted(false);
@@ -206,7 +211,30 @@ public class ManagerUI extends Login{
 		JButton btnEditMng = new JButton("Edit");
 		btnEditMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO: Edit a selected Object using comboBoxMng.getSelectedItem()
+				if (comboBoxMng.getSelectedItem().equals("Member List")) {
+					// get the selected item
+					int row = tableManager.getSelectedRow();
+					
+					// make sure a row is selected
+					if (row < 0) {
+						JOptionPane.showMessageDialog(ManagerUI.this, "You must select a Member", "Error",
+								JOptionPane.ERROR_MESSAGE);				
+						return;
+					}
+					
+					// get the current member
+					Member tempMember = (Member) tableManager.getValueAt(row, ManagerMemberTableModel.OBJECT_COL);
+					
+					// create dialog
+					ManagerMemberDialogue dialog = new ManagerMemberDialogue(ManagerUI.this, gymDAO, 
+																tempMember, true);
+
+					// show dialog
+					dialog.setVisible(true);
+				}
+				else if (comboBoxMng.getSelectedItem().equals("Employee List")) {
+					//TODO: Masashi: Do the same as member
+				}
 			}
 		});
 		btnEditMng.setBorderPainted(false);

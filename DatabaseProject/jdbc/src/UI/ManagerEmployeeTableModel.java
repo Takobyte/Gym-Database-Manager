@@ -10,6 +10,7 @@ import core.Employee;
 
 public class ManagerEmployeeTableModel extends AbstractTableModel {
 	
+	public static final int OBJECT_COL = -1;
 	private String[] columnNames = {"Emp_id", "Name", "Job_Title", "Salary", "Address", "Day of Birth","Telephone", "Manager_Flag", "Instructor_Flag"};
 	private List<Employee> employees;
 	
@@ -65,6 +66,8 @@ public class ManagerEmployeeTableModel extends AbstractTableModel {
 			return tempEmployee.getManager_flag();
 		case 8:
 			return tempEmployee.getInstructor_flag();
+		case OBJECT_COL:
+			return tempEmployee;
 		default:
 			return tempEmployee.getName();
 		}

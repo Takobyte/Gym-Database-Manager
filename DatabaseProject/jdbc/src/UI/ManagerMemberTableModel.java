@@ -8,6 +8,7 @@ import core.Member;
 
 class ManagerMemberTableModel extends AbstractTableModel{
 	
+	public static final int OBJECT_COL = -1;
 	private String[] columnNames = {"ID", "Name", "Telephone", "Date of Birth", "Address", "std_exp_date", "prm_exp_date", "Branch ID"};
 	private List<Member> members;
 	
@@ -63,6 +64,8 @@ class ManagerMemberTableModel extends AbstractTableModel{
 			return tempMember.getPrmExpDate();
 		case 7:
 			return tempMember.getBranchId();
+		case OBJECT_COL:
+			return tempMember;
 		default:
 			return tempMember.getName();
 		}

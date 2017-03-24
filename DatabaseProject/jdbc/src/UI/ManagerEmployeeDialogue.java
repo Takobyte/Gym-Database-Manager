@@ -19,6 +19,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import com.toedter.calendar.JDateChooser;
 
+import core.Employee;
 import core.Member;
 
 import java.awt.event.ActionListener;
@@ -26,7 +27,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 
-public class ManagerAddEmployee extends JDialog {
+public class ManagerEmployeeDialogue extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private ManagerUI managerUI;
@@ -36,20 +37,28 @@ public class ManagerAddEmployee extends JDialog {
 	private JTextField textFieldSalary;
 	private JTextField textFieldAddr;
 	private JTextField textFieldTel;
+	
+	private Employee previousEmployee = null;
+	private boolean updateMode = false;
 
 	/**
 	 * Launch the application.
 	 */
-	public ManagerAddEmployee(ManagerUI theManagerUI, GymDAO theGymDAO) {
+	//TODO: Masashi: change the constructor like ManagerMemberDialogue
+	public ManagerEmployeeDialogue(ManagerUI theManagerUI, GymDAO theGymDAO) {
 		this();
 		managerUI = theManagerUI;
 		gymDAO = theGymDAO;
+	}
+	
+	private void populateGui(Employee employee) {
+		//TODO: Masashi: follow example in ManagerMemberDialogue
 	}
 
 	/**
 	 * Create the dialog.
 	 */
-	public ManagerAddEmployee() {
+	public ManagerEmployeeDialogue() {
 		setResizable(false);
 		setTitle("Add Employee");
 		setBounds(100, 100, 450, 279);
@@ -165,7 +174,9 @@ public class ManagerAddEmployee extends JDialog {
 				JButton cancelButton = new JButton("Cancel");
 				cancelButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						//TODO: closes the dialogue box
+						// close dialog
+						setVisible(false);
+						dispose();
 					}
 				});
 				cancelButton.setActionCommand("Cancel");
@@ -175,7 +186,7 @@ public class ManagerAddEmployee extends JDialog {
 	}
 	
 	protected void saveEmployee() throws ParseException {
-		//TODO: Follow example of ManagerAddMember.java: saveMember()
+		//TODO: Masashi: Follow example of ManagerAddMember.java: saveMember()
 	}
 
 }

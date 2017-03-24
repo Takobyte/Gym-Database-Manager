@@ -9,18 +9,7 @@ public class Equipment {
 	int months_to_next_service;
 	String rid;
 	String sid;
-	public String getRid() {
-		return rid;
-	}
-	public void setRid(String rid) {
-		this.rid = rid;
-	}
-	public String getSid() {
-		return sid;
-	}
-	public void setSid(String sid) {
-		this.sid = sid;
-	}
+	
 	public Equipment(String equip_id, String name, String model_no, float price, Date purchase_date,
 			int months_to_next_service, String rid, String sid) {
 		this.equip_id = equip_id;
@@ -32,14 +21,18 @@ public class Equipment {
 		this.rid = rid;
 		this.sid = sid;
 	}
-	public Equipment(String equip_id, String name, String model_no, float price, Date purchase_date,
-			int months_to_next_service) {
-		this.equip_id = equip_id;
-		this.name = name;
-		this.model_no = model_no;
-		this.price = price;
-		this.purchase_date = purchase_date;
-		this.months_to_next_service = months_to_next_service;
+
+	public String getRid() {
+		return rid;
+	}
+	public void setRid(String rid) {
+		this.rid = rid;
+	}
+	public String getSid() {
+		return sid;
+	}
+	public void setSid(String sid) {
+		this.sid = sid;
 	}
 	public String getEquip_id() {
 		return equip_id;
