@@ -27,7 +27,8 @@ import java.text.ParseException;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 
-public class ManagerEmployeeDialogue extends JDialog {
+// Manager: Employee Dialogue Window
+public class MEDialogue extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private ManagerUI managerUI;
@@ -45,7 +46,7 @@ public class ManagerEmployeeDialogue extends JDialog {
 	 * Launch the application.
 	 */
 	//TODO: Masashi: change the constructor like ManagerMemberDialogue
-	public ManagerEmployeeDialogue(ManagerUI theManagerUI, GymDAO theGymDAO) {
+	public MEDialogue(ManagerUI theManagerUI, GymDAO theGymDAO) {
 		this();
 		managerUI = theManagerUI;
 		gymDAO = theGymDAO;
@@ -58,7 +59,7 @@ public class ManagerEmployeeDialogue extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public ManagerEmployeeDialogue() {
+	public MEDialogue() {
 		setResizable(false);
 		setTitle("Add Employee");
 		setBounds(100, 100, 450, 279);

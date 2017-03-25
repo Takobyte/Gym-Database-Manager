@@ -111,12 +111,20 @@ public class Login extends JFrame {
 		JButton loginBtnSignIn = new JButton("Sign in");
 		loginBtnSignIn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (loginUserComboBox.getSelectedItem().equals("Member")) {
-				ManagerUI manager = new ManagerUI();
-				manager.managerUI();
-				setVisible(false);
+				if (loginUserComboBox.getSelectedItem().equals("Manager")) {
+					ManagerUI manager = new ManagerUI();
+					manager.managerUI();
+					setVisible(false);
 				}
-				
+				else if (loginUserComboBox.getSelectedItem().equals("Member")) {
+					//TODO: open Member UI
+					MemberUI member = new MemberUI();
+					member.setVisible(true);
+					
+				}
+				else if (loginUserComboBox.getSelectedItem().equals("Employee")) {
+					//TODO: open employee UI
+				}
 			}
 		});
 		loginBtnSignIn.setBounds(5, 84, 86, 23);
@@ -126,6 +134,12 @@ public class Login extends JFrame {
 	}
 	public void loginVisibility() {
 		setVisible(true);
+	}
+	
+	public void exit() {
+		setVisible(false);
+		dispose();
+		System.exit(1);
 	}
 	
 }

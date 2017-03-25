@@ -28,7 +28,8 @@ import javax.swing.JComboBox;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.SwingConstants;
 
-public class ManagerMemberDialogue extends JDialog {
+//Manager: Employee Dialogue Window
+public class MMDialogue extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textFieldName;
@@ -48,7 +49,7 @@ public class ManagerMemberDialogue extends JDialog {
 	/**
 	 * Launch the application.
 	 */
-	public ManagerMemberDialogue(ManagerUI theManagerUI, GymDAO theGymDAO, Member previousMember, boolean updateMode) {
+	public MMDialogue(ManagerUI theManagerUI, GymDAO theGymDAO, Member previousMember, boolean updateMode) {
 		this();
 		managerUI = theManagerUI;
 		gymDAO = theGymDAO;
@@ -75,7 +76,7 @@ public class ManagerMemberDialogue extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public ManagerMemberDialogue() {
+	public MMDialogue() {
 		setTitle("Add Member");
 		setBounds(100, 100, 450, 290);
 		getContentPane().setLayout(new BorderLayout());

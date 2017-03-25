@@ -8,13 +8,14 @@ import javax.swing.table.AbstractTableModel;
 import core.Class_purchase;
 import core.Employee;
 
-public class ManagerEmployeeTableModel extends AbstractTableModel {
+//Manager: Employee JTable Model
+public class METableModel extends AbstractTableModel {
 	
 	public static final int OBJECT_COL = -1;
 	private String[] columnNames = {"Emp_id", "Name", "Job_Title", "Salary", "Address", "Day of Birth","Telephone", "Manager_Flag", "Instructor_Flag"};
 	private List<Employee> employees;
 	
-	public ManagerEmployeeTableModel(List<Employee> employees) {
+	public METableModel(List<Employee> employees) {
 		this.employees = employees;
 	}
 

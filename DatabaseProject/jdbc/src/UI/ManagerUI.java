@@ -67,7 +67,7 @@ public class ManagerUI extends Login{
 		managerWindow = new JFrame();
 		managerWindow.setTitle("Manager");
 		managerWindow.setBounds(100, 100, 503, 324);
-		managerWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		managerWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		managerWindow.getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JPanel panelBtmMember = new JPanel();
@@ -93,6 +93,7 @@ public class ManagerUI extends Login{
 					tempFrame = tempFrame.getParent();
 				} while (!(tempFrame instanceof JFrame)); {
 					((JFrame) tempFrame).dispose();
+					exit();
 				}
 				
 			}
@@ -104,8 +105,8 @@ public class ManagerUI extends Login{
 		fl_panelTopMember.setAlignment(FlowLayout.LEFT);
 		managerWindow.getContentPane().add(panelTopMember, BorderLayout.NORTH);
 		
-		JLabel lblEnterName = new JLabel("Enter Name:");
-		panelTopMember.add(lblEnterName);
+		JLabel lblFilter = new JLabel("Filter:");
+		panelTopMember.add(lblFilter);
 		
 		txtbNameMng = new JTextField();
 		panelTopMember.add(txtbNameMng);
@@ -129,7 +130,7 @@ public class ManagerUI extends Login{
 							System.out.println(temp);
 						}
 						
-						ManagerMemberTableModel model = new ManagerMemberTableModel(members);
+						MMTableModel model = new MMTableModel(members);
 						tableManager.setModel(model);
 					}
 					else if (comboBoxMng.getSelectedItem() == "Employee List") {
@@ -145,8 +146,20 @@ public class ManagerUI extends Login{
 							System.out.println(temp);
 						}
 						
-						ManagerEmployeeTableModel model = new ManagerEmployeeTableModel(employees);
+						METableModel model = new METableModel(employees);
 						tableManager.setModel(model);
+					}
+					else if (comboBoxMng.getSelectedItem() == "Gym") {
+						//TODO: follow example top
+					}
+					else if (comboBoxMng.getSelectedItem() == "Room") {
+						//TODO: follow example top
+					}
+					else if (comboBoxMng.getSelectedItem() == "Equipment") {
+						//TODO: follow example top
+					}
+					else if (comboBoxMng.getSelectedItem() == "Supplier") {
+						//TODO: follow example top
 					}
 				}
 				catch (Exception exc) {
@@ -157,7 +170,7 @@ public class ManagerUI extends Login{
 		panelTopMember.add(btnSearchMng);
 		
 		comboBoxMng = new JComboBox();
-		comboBoxMng.setModel(new DefaultComboBoxModel(new String[] {"Employee List", "Member List"}));
+		comboBoxMng.setModel(new DefaultComboBoxModel(new String[] {"Employee List", "Member List", "Gym", "Room", "Equipment", "Supplier"}));
 		panelTopMember.add(comboBoxMng);
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -177,17 +190,29 @@ public class ManagerUI extends Login{
 			public void actionPerformed(ActionEvent e) {
 				if (comboBoxMng.getSelectedItem().equals("Member List")) {
 					// create dialog
-					ManagerMemberDialogue dialog = new ManagerMemberDialogue(ManagerUI.this, gymDAO, null, false);
+					MMDialogue dialog = new MMDialogue(ManagerUI.this, gymDAO, null, false);
 	
 					// show dialog
 					dialog.setVisible(true);
 				}
 				else if (comboBoxMng.getSelectedItem().equals("Employee List")) {
 					// create dialog
-					ManagerEmployeeDialogue dialog = new ManagerEmployeeDialogue(ManagerUI.this, gymDAO);
+					MEDialogue dialog = new MEDialogue(ManagerUI.this, gymDAO);
 	
 					// show dialog
 					dialog.setVisible(true);
+				}
+				else if (comboBoxMng.getSelectedItem() == "Gym") {
+					//TODO: create new MGDialogue
+				}
+				else if (comboBoxMng.getSelectedItem() == "Room") {
+					//TODO: create new MRDialogue
+				}
+				else if (comboBoxMng.getSelectedItem() == "Equipment") {
+					//TODO: create new MEqDialogue
+				}
+				else if (comboBoxMng.getSelectedItem() == "Supplier") {
+					//TODO: create new MSDialogue
 				}
 			}
 		});
@@ -197,11 +222,52 @@ public class ManagerUI extends Login{
 		JButton btnDeleteMng = new JButton("Delete");
 		btnDeleteMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//TODO: transform this method so that it edits Member, employee, gym, etc (DO NOT CREATE NEW IF ELSE
+				// FOR employee,etc)
 				if (comboBoxMng.getSelectedItem().equals("Member List")) {
-					//TODO: Delete a selected Object using tableManger.getSelectedItem()
+					try {
+						// get the selected row
+						int row = tableManager.getSelectedRow();
+
+						// make sure a row is selected
+						if (row < 0) {
+							JOptionPane.showMessageDialog(ManagerUI.this, 
+									"You must select a member", "Error", JOptionPane.ERROR_MESSAGE);				
+							return;
+						}
+
+						// prompt the user
+						int response = JOptionPane.showConfirmDialog(
+								ManagerUI.this, "Delete this member?", "Confirm", 
+								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+						if (response != JOptionPane.YES_OPTION) {
+							return;
+						}
+
+						// get the current member
+						Member tempMember = (Member) tableManager.getValueAt(row, MMTableModel.OBJECT_COL);
+
+						// delete the member
+						gymDAO.delete(tempMember.getMid(), "Member");
+
+						// refresh GUI
+						refreshMemberView();
+
+						// show success message
+						JOptionPane.showMessageDialog(ManagerUI.this,
+								"Member deleted succesfully.", "Member Deleted",
+								JOptionPane.INFORMATION_MESSAGE);
+
+					} catch (Exception exc) {
+						JOptionPane.showMessageDialog(ManagerUI.this,
+								"Error deleting member: " + exc.getMessage(), "Error",
+								JOptionPane.ERROR_MESSAGE);
+					}
+
 				}
 				else if (comboBoxMng.getSelectedItem().equals("Employee List")) {
-					//TODO: Do the same as member
+					//TODO: Masashi: Do the same as member
 				}
 			}
 		});
@@ -211,6 +277,8 @@ public class ManagerUI extends Login{
 		JButton btnEditMng = new JButton("Edit");
 		btnEditMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//TODO: transform this method so that it edits Member, employee, gym, etc (DO NOT CREATE NEW IF ELSE
+				// FOR employee,etc)
 				if (comboBoxMng.getSelectedItem().equals("Member List")) {
 					// get the selected item
 					int row = tableManager.getSelectedRow();
@@ -223,10 +291,10 @@ public class ManagerUI extends Login{
 					}
 					
 					// get the current member
-					Member tempMember = (Member) tableManager.getValueAt(row, ManagerMemberTableModel.OBJECT_COL);
+					Member tempMember = (Member) tableManager.getValueAt(row, MMTableModel.OBJECT_COL);
 					
 					// create dialog
-					ManagerMemberDialogue dialog = new ManagerMemberDialogue(ManagerUI.this, gymDAO, 
+					MMDialogue dialog = new MMDialogue(ManagerUI.this, gymDAO, 
 																tempMember, true);
 
 					// show dialog
@@ -245,7 +313,7 @@ public class ManagerUI extends Login{
 		try {
 			List<Employee> employees = gymDAO.getAllEmployees();
 			// create the model and update the "table"
-			ManagerEmployeeTableModel model = new ManagerEmployeeTableModel(employees);
+			METableModel model = new METableModel(employees);
 			tableManager.setModel(model);
 		} catch (Exception exc) {
 			JOptionPane.showMessageDialog(this, "Error: " + exc, "Error",
@@ -258,7 +326,7 @@ public class ManagerUI extends Login{
 			List<Member> members = gymDAO.getAllMembers();
 
 			// create the model and update the "table"
-			ManagerMemberTableModel model = new ManagerMemberTableModel(members);
+			MMTableModel model = new MMTableModel(members);
 
 			tableManager.setModel(model);
 		} catch (Exception exc) {
@@ -266,5 +334,21 @@ public class ManagerUI extends Login{
 					JOptionPane.ERROR_MESSAGE);
 		}
 		
+	}
+	
+	public void refreshGymView() {
+		//TODO: follow example for member
+	}
+	
+	public void refreshRoomView() {
+		//TODO: follow example for member
+	}
+	
+	public void refreshEquipmentView() {
+		//TODO: follow example for member
+	}
+	
+	public void refreshSupplierView() {
+		//TODO: follow example for member
 	}
 }

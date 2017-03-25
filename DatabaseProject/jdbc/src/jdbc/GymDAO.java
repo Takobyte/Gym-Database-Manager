@@ -20,6 +20,62 @@ public class GymDAO {
 
 	}
 	
+	public void delete(int id, String tableName) throws SQLException {
+		//TODO: complete each cases
+		PreparedStatement myStmt = null;
+		
+		try {
+			// prepare statement
+			switch (tableName) {
+			case "Member":
+				myStmt = myConn.prepareStatement("delete from members where id=?");
+			case "Employee":
+			case "Gym":
+			case "Room":
+			case "Equipment":
+			case "Supplier":
+			default:
+				myStmt = null;
+			}
+			
+			// set param
+			myStmt.setInt(1, id);
+			
+			// execute SQL
+			myStmt.executeUpdate();			
+		}
+		finally {
+			close(myStmt,null);
+		}
+		
+	}
+	
+//	public void deleteMember(int memberId) throws SQLException {
+//		PreparedStatement myStmt = null;
+//
+//		try {
+//			// prepare statement
+//			myStmt = myConn.prepareStatement("delete from members where id=?");
+//			
+//			// set param
+//			myStmt.setInt(1, memberId);
+//			
+//			// execute SQL
+//			myStmt.executeUpdate();			
+//		}
+//		finally {
+//			close(myStmt,null);
+//		}
+//	}
+//	
+//	public void deleteEmployee(int employeeId) throws SQLException {
+//		//TODO: Masashi: follow deleteMember
+//	}
+	
+//	public void update(Class<?> table) throws SQLException {
+//		
+//	}
+	
 	public void updateMember(Member member) throws SQLException {
 		PreparedStatement myStmt = null;
 
@@ -106,6 +162,35 @@ public class GymDAO {
 	public void addEmployee(Employee employee) throws Exception {
 		//TODO: Masashi: similar to addMember but do not add employee ID
 	}
+	
+//	public <T> void addMember(Class<T> type) throws Exception {
+//		Member member = Member<T>
+//		Employee employee;
+//		
+//		PreparedStatement myStmt = null;
+//		
+//		try {
+//			// prepare statement
+//			myStmt = myConn.prepareStatement("insert into members"
+//					+ " (name, telephone, dob, address, std_exp_date, prm_exp_date, branch_id)"
+//					+ " values (?, ?, ?, ?, ?, ?, ?)");
+//			
+//			// set parameters
+//			myStmt.setString(1, member.getName());
+//			myStmt.setString(2, member.getTelephone());
+//			myStmt.setDate(3, new java.sql.Date(member.getDob().getTime()));
+//			myStmt.setString(4, member.getAddr());
+//			myStmt.setDate(5, new java.sql.Date(member.getStdExpDate().getTime()));
+//			myStmt.setDate(6, new java.sql.Date(member.getPrmExpDate().getTime()));
+//			myStmt.setInt(7, member.getBranchId());
+//			
+//			// execute SQL
+//			myStmt.executeUpdate();
+//		}
+//		finally {
+//			close(myStmt,null);
+//		}
+//	}
 	
 	public void addMember(Member member) throws Exception {
 		PreparedStatement myStmt = null;

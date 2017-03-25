@@ -6,7 +6,8 @@ import javax.swing.table.AbstractTableModel;
 
 import core.Member;
 
-class ManagerMemberTableModel extends AbstractTableModel{
+//Manager: Member JTable Model
+class MMTableModel extends AbstractTableModel{
 	
 	public static final int OBJECT_COL = -1;
 	private String[] columnNames = {"ID", "Name", "Telephone", "Date of Birth", "Address", "std_exp_date", "prm_exp_date", "Branch ID"};
@@ -14,7 +15,7 @@ class ManagerMemberTableModel extends AbstractTableModel{
 	
 	
 	
-	public ManagerMemberTableModel(List<Member> members) {
+	public MMTableModel(List<Member> members) {
 		this.members = members;
 	}
 
