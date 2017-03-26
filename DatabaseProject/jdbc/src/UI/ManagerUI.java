@@ -461,6 +461,26 @@ public class ManagerUI extends Login{
 					// show dialog
 					dialog.setVisible(true);
 				}
+				else if (comboBoxMng.getSelectedItem().equals("Gym List")) {
+					// get the selected item
+					int row = tableManager.getSelectedRow();
+					
+					// make sure a row is selected
+					if (row < 0) {
+						JOptionPane.showMessageDialog(ManagerUI.this, "You must select a Gym", "Error",
+								JOptionPane.ERROR_MESSAGE);				
+						return;
+					}
+					
+					// get the current employee
+					Gym tempGym = (Gym) tableManager.getValueAt(row, MGTableModel.OBJECT_COL);
+					
+					// create dialog
+					MGDialogue dialog = new MGDialogue(ManagerUI.this, gymDAO, tempGym, true);
+
+					// show dialog
+					dialog.setVisible(true);
+				}
 			}
 		});
 		btnEditMng.setBorderPainted(false);

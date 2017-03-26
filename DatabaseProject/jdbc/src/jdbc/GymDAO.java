@@ -705,8 +705,34 @@ public class GymDAO {
 		
 	}
 
-	public void addEq(Equipment tempEq) {
-		// TODO Auto-generated method stub
+	public void addEq(Equipment tempEq) throws SQLException{
+		PreparedStatement myStmt = null;
+		try {
+			// prepare statement
+			myStmt = myConn.prepareStatement("insert into Equipment"
+					+ " (name,model_no,price, purchase_date, last_service_date)"
+					+ " values (?, ?, ?, ?, ?)");
+			 
+			// set parameters
+			myStmt.setString(1, tempEq.getName());
+			myStmt.setString(2, tempEq.getModel_no());
+			myStmt.setFloat(3,tempEq.getPrice());
+			try {
+			myStmt.setDate(4, new java.sql.Date(tempEq.getPurchase_date().getTime()));
+			} catch (NullPointerException e) {
+				myStmt.setDate(4, null);
+			}
+			try {
+			myStmt.setDate(5, new java.sql.Date(tempEq.getLast_service_date().getTime()));
+			} catch (NullPointerException e) {
+				myStmt.setDate(5, null);
+			}
+			// execute SQL
+			myStmt.executeUpdate();
+		}
+		finally {
+			close(myStmt,null);
+		}	
 		
 	}
 }
