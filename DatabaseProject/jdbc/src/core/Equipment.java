@@ -1,43 +1,45 @@
 package core;
 import java.util.Date;
 public class Equipment {
-	String equip_id;
+	int equip_id;
 	String name;
 	String model_no ;
 	float price;
 	Date purchase_date;
+	Date last_service_date;
 	int months_to_next_service;
-	String rid;
-	String sid;
+	int rid;
+	int sid;
 	
-	public Equipment(String equip_id, String name, String model_no, float price, Date purchase_date,
-			int months_to_next_service, String rid, String sid) {
+	public Equipment(int equip_id, String name, String model_no, float price, Date purchase_date,
+			Date last_service_date, int months_to_next_service, int rid, int sid) {
 		this.equip_id = equip_id;
 		this.name = name;
 		this.model_no = model_no;
 		this.price = price;
 		this.purchase_date = purchase_date;
+		this.last_service_date = last_service_date;
 		this.months_to_next_service = months_to_next_service;
 		this.rid = rid;
 		this.sid = sid;
 	}
 
-	public String getRid() {
+	public int getRid() {
 		return rid;
 	}
-	public void setRid(String rid) {
+	public void setRid(int rid) {
 		this.rid = rid;
 	}
-	public String getSid() {
+	public int getSid() {
 		return sid;
 	}
-	public void setSid(String sid) {
+	public void setSid(int sid) {
 		this.sid = sid;
 	}
-	public String getEquip_id() {
+	public int getEquip_id() {
 		return equip_id;
 	}
-	public void setEquip_id(String equip_id) {
+	public void setEquip_id(int equip_id) {
 		this.equip_id = equip_id;
 	}
 	public String getName() {
@@ -69,6 +71,14 @@ public class Equipment {
 	}
 	public void setMonths_to_next_service(int months_to_next_service) {
 		this.months_to_next_service = months_to_next_service;
+	}
+
+	public Date getLast_service_date() {
+		return last_service_date;
+	}
+
+	public void setLast_service_date(Date last_service_date) {
+		this.last_service_date = last_service_date;
 	}
 	
 	

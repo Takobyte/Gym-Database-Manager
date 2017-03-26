@@ -1,20 +1,20 @@
 package core;
 
 public class Supplier {
-	String sid;
+	int sid;
 	String name;
-	int telephone;
+	String telephone;
 	String address;
-	public Supplier(String sid, String name, int telephone, String address) {
+	public Supplier(int sid, String name, String telephone, String address) {
 		this.sid = sid;
 		this.name = name;
 		this.telephone = telephone;
 		this.address = address;
 	}
-	public String getSid() {
+	public int getSid() {
 		return sid;
 	}
-	public void setSid(String sid) {
+	public void setSid(int sid) {
 		this.sid = sid;
 	}
 	public String getName() {
@@ -23,10 +23,10 @@ public class Supplier {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public int getTelephone() {
+	public String getTelephone() {
 		return telephone;
 	}
-	public void setTelephone(int telephone) {
+	public void setTelephone(String telephone) {
 		this.telephone = telephone;
 	}
 	public String getAddress() {

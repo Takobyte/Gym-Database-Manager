@@ -1,22 +1,22 @@
 package core;
 import java.util.Date;
 public class Gym {
-	private String branch_id;
+	private int branch_id;
 	private String name;
 	private String address;
 	private Date open_date;
-	private int telephone;
-	public Gym(String branch_id, String name, String address, Date open_date, int telephone) {
+	private String telephone;
+	public Gym(int branch_id, String name, String address, Date open_date, String telephone) {
 		this.branch_id = branch_id;
 		this.name = name;
 		this.address = address;
 		this.open_date = open_date;
 		this.telephone = telephone;
 	}
-	public String getBranch_id() {
+	public int getBranch_id() {
 		return branch_id;
 	}
-	public void setBranch_id(String branch_id) {
+	public void setBranch_id(int branch_id) {
 		this.branch_id = branch_id;
 	}
 	public String getName() {
@@ -37,10 +37,10 @@ public class Gym {
 	public void setOpen_date(Date open_date) {
 		this.open_date = open_date;
 	}
-	public int getTelephone() {
+	public String getTelephone() {
 		return telephone;
 	}
-	public void setTelephone(int telephone) {
+	public void setTelephone(String telephone) {
 		this.telephone = telephone;
 	}
 	

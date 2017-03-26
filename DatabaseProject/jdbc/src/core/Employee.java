@@ -7,12 +7,12 @@ public class Employee {
 	private int salary;
 	private String address;
 	private Date dob;
-	private int telephone;
+	private String telephone;
     private Boolean manager_flag;
     private Boolean instructor_flag;
 
-	public Employee(int emp_id, String name, String job_title, int salary, String address, Date dob, int telephone,
-			int months_to_next_service, boolean manager_flag, boolean instructor_flag) {
+	public Employee(int emp_id, String name, String job_title, int salary, String address, Date dob, String telephone,
+			 boolean manager_flag, boolean instructor_flag) {
 		this.emp_id = emp_id;
 		this.name = name;
 		this.job_title = job_title;
@@ -72,11 +72,11 @@ public class Employee {
 		this.dob = dob;
 	}
 
-	public int getTelephone() {
+	public String getTelephone() {
 		return telephone;
 	}
 
-	public void setTelephone(int telephone) {
+	public void setTelephone(String telephone) {
 		this.telephone = telephone;
 	}
 

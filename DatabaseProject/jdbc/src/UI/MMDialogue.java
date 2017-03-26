@@ -207,7 +207,13 @@ public class MMDialogue extends JDialog {
 		String addr = textFieldAddr.getText();
 		Date stdExpDate = dateChooserStd.getDate();
 		Date prmExpDate = dateChooserPrm.getDate();
-		int branchId = Integer.parseInt(textFieldBranch.getText());
+		int branchId;
+		if (textFieldBranch.getText().isEmpty()) {
+			branchId = -1;
+		}
+		else {
+			branchId = Integer.parseInt(textFieldBranch.getText());
+		}
 
 		Member tempMember = null;
 		

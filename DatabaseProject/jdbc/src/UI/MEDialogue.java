@@ -38,6 +38,9 @@ public class MEDialogue extends JDialog {
 	private JTextField textFieldSalary;
 	private JTextField textFieldAddr;
 	private JTextField textFieldTel;
+	private JRadioButton rdbtnManagerFlag;
+	private JRadioButton rdbtnInstructorFlag;
+	private JDateChooser dateChooserDob;
 	
 	private Employee previousEmployee = null;
 	private boolean updateMode = false;
@@ -45,15 +48,33 @@ public class MEDialogue extends JDialog {
 	/**
 	 * Launch the application.
 	 */
-	//TODO: Masashi: change the constructor like ManagerMemberDialogue
-	public MEDialogue(ManagerUI theManagerUI, GymDAO theGymDAO) {
+	public MEDialogue(ManagerUI theManagerUI, GymDAO theGymDAO,Employee previousEmployee, boolean updateMode) {
 		this();
 		managerUI = theManagerUI;
 		gymDAO = theGymDAO;
+		this.previousEmployee=previousEmployee;
+		this.updateMode=updateMode;
+		if (updateMode) {
+			setTitle("Update Employee");
+			populateGui(previousEmployee);
+		}
 	}
 	
 	private void populateGui(Employee employee) {
-		//TODO: Masashi: follow example in ManagerMemberDialogue
+		
+		textFieldName.setText(employee.getName());
+		textFieldJob.setText(employee.getJob_title());
+		textFieldSalary.setText(String.valueOf(employee.getSalary()));
+		textFieldAddr.setText(employee.getAddress());
+		textFieldTel.setText(employee.getTelephone());
+		dateChooserDob.setDate(employee.getDob());
+		if(employee.getManager_flag()){
+			rdbtnManagerFlag.setSelected(true);
+		}
+		if(employee.getInstructor_flag()){
+			rdbtnInstructorFlag.setSelected(true);
+			
+		}
 	}
 
 	/**
@@ -62,7 +83,7 @@ public class MEDialogue extends JDialog {
 	public MEDialogue() {
 		setResizable(false);
 		setTitle("Add Employee");
-		setBounds(100, 100, 450, 279);
+		setBounds(100, 100, 450, 415);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -127,8 +148,8 @@ public class MEDialogue extends JDialog {
 			contentPanel.add(lblDateOfBirth, "2, 10");
 		}
 		{
-			JDateChooser dateChooser = new JDateChooser();
-			contentPanel.add(dateChooser, "4, 10, fill, fill");
+			dateChooserDob = new JDateChooser();
+			contentPanel.add(dateChooserDob, "4, 10, fill, fill");
 		}
 		{
 			JLabel lblTelephone = new JLabel("Telephone:");
@@ -143,11 +164,11 @@ public class MEDialogue extends JDialog {
 			JPanel panel = new JPanel();
 			contentPanel.add(panel, "4, 14, fill, fill");
 			{
-				JRadioButton rdbtnManagerFlag = new JRadioButton("Manager Flag");
+				rdbtnManagerFlag = new JRadioButton("Manager Flag");
 				panel.add(rdbtnManagerFlag);
 			}
 			{
-				JRadioButton rdbtnInstructorFlag = new JRadioButton("Instructor Flag");
+				rdbtnInstructorFlag = new JRadioButton("Instructor Flag");
 				panel.add(rdbtnInstructorFlag);
 			}
 		}
@@ -187,7 +208,56 @@ public class MEDialogue extends JDialog {
 	}
 	
 	protected void saveEmployee() throws ParseException {
-		//TODO: Masashi: Follow example of ManagerAddMember.java: saveMember()
+		String name = textFieldName.getText();
+		String job_title = textFieldJob.getText();
+		int salary = Integer.parseInt(textFieldSalary.getText());
+		String address = textFieldAddr.getText();
+		String telephone=textFieldTel.getText();
+		Date dob= dateChooserDob.getDate();
+		boolean managerFlag=rdbtnManagerFlag.isSelected();
+		boolean instructorFlag=rdbtnInstructorFlag.isSelected();
+		Employee tmpEmployee=null;
+	
+		if(updateMode){
+		   tmpEmployee=previousEmployee;
+		   tmpEmployee.setName(name);
+		   tmpEmployee.setJob_title(job_title);
+		   tmpEmployee.setSalary(salary);
+		   tmpEmployee.setAddress(address);
+		   tmpEmployee.setTelephone(telephone);
+		   tmpEmployee.setDob(dob);
+		   tmpEmployee.setManager_flag(rdbtnManagerFlag.isSelected());
+		   tmpEmployee.setInstructor_flag(rdbtnInstructorFlag.isSelected());
+		}
+		else {
+			tmpEmployee=new Employee(0, name, job_title, salary, address, dob, telephone, managerFlag, instructorFlag);
+		}
+		try{
+			//save to the database 
+			if(updateMode){
+				gymDAO.updateEmployee(tmpEmployee);
+			} else {
+				gymDAO.addEmployee(tmpEmployee);
+			}
+	   
+			//close 
+			setVisible(false);
+			dispose();
+			// refresh gui list
+			managerUI.refreshEmployeeView();
+			// show success message
+			JOptionPane.showMessageDialog(managerUI,
+					"Employee added succesfully.",
+					"Employee Added",
+					JOptionPane.INFORMATION_MESSAGE);
+   
+			} catch (Exception exc) {
+			JOptionPane.showMessageDialog(
+					managerUI,
+					"Error saving employee: "
+							+ exc.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+			}
 	}
 
 }

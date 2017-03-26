@@ -117,13 +117,15 @@ public class Login extends JFrame {
 					setVisible(false);
 				}
 				else if (loginUserComboBox.getSelectedItem().equals("Member")) {
-					//TODO: open Member UI
+					
 					MemberUI member = new MemberUI();
 					member.setVisible(true);
 					
 				}
 				else if (loginUserComboBox.getSelectedItem().equals("Employee")) {
-					//TODO: open employee UI
+					
+					EmployeeUI employee = new EmployeeUI();
+					employee.setVisible(true);
 				}
 			}
 		});

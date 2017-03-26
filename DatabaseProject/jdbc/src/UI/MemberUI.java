@@ -88,7 +88,8 @@ public class MemberUI extends JFrame {
 		panel_1.add(btnPurchase);
 		btnPurchase.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Open Purchase UI
+				PurchaseUI purchase = new PurchaseUI();
+				purchase.setVisible(true);
 			}
 		});
 		panel_1.add(btnSignOut);

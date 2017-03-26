@@ -28,18 +28,18 @@ public class PurchaseUI extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					PurchaseUI frame = new PurchaseUI();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					PurchaseUI frame = new PurchaseUI();
+//					frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the frame.
@@ -47,7 +47,7 @@ public class PurchaseUI extends JFrame {
 	public PurchaseUI() {
 		setTitle("Purchase");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 195);
+		setBounds(100, 100, 554, 260);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -57,9 +57,9 @@ public class PurchaseUI extends JFrame {
 		contentPane.add(panel, BorderLayout.WEST);
 		panel.setLayout(new FormLayout(new ColumnSpec[] {
 				FormSpecs.RELATED_GAP_COLSPEC,
-				ColumnSpec.decode("97px"),
+				ColumnSpec.decode("119px"),
 				FormSpecs.LABEL_COMPONENT_GAP_COLSPEC,
-				ColumnSpec.decode("77px"),},
+				ColumnSpec.decode("151px"),},
 			new RowSpec[] {
 				FormSpecs.RELATED_GAP_ROWSPEC,
 				RowSpec.decode("23px"),
