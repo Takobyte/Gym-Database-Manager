@@ -18,6 +18,7 @@ import java.awt.FlowLayout;
 import javax.swing.JTextField;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 
+import core.Member;
 import jdbc.GymDAO;
 
 import java.awt.Component;
@@ -32,6 +33,7 @@ public class Login extends JFrame {
 	private JTextField loginPassText;
 	
 	protected GymDAO gymDAO;
+	private int mid;
 
 	/**
 	 * Launch the application.
@@ -42,6 +44,7 @@ public class Login extends JFrame {
 				try {
 					Login frame = new Login();
 					frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -117,15 +120,32 @@ public class Login extends JFrame {
 					setVisible(false);
 				}
 				else if (loginUserComboBox.getSelectedItem().equals("Member")) {
-					
-					MemberUI member = new MemberUI();
-					member.setVisible(true);
+//					JOptionPane.showMessageDialog(Login.this,
+//							"Not available at the moment.",
+//							"Error",
+//							JOptionPane.INFORMATION_MESSAGE);
+					setVisible(false);
+					try {
+						mid = Integer.parseInt(loginUserText.getText());
+						Member member = new Member(0, "", "", null, "", null, null, 0);
+						member = gymDAO.fetchMember(member,mid);
+						MemberUI memberUI = new MemberUI(gymDAO, member);
+						memberUI.setVisible(true);
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(Login.this,
+								"Username does not exist.",
+								"Error",
+								JOptionPane.INFORMATION_MESSAGE);
+					}
 					
 				}
 				else if (loginUserComboBox.getSelectedItem().equals("Employee")) {
-					
-					EmployeeUI employee = new EmployeeUI();
-					employee.setVisible(true);
+					JOptionPane.showMessageDialog(Login.this,
+							"Not available at the moment.",
+							"Error",
+							JOptionPane.INFORMATION_MESSAGE);
+//					EmployeeUI employee = new EmployeeUI();
+//					employee.setVisible(true);
 				}
 			}
 		});

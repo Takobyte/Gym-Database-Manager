@@ -11,6 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.sql.ResultSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
@@ -23,16 +25,30 @@ import javax.swing.WindowConstants;
 
 import core.Employee;
 import core.Gym;
+import core.Innerjoin_Members_Gym;
 import core.Member;
 import core.Room;
 import core.Equipment;
 import core.Supplier;
+import managerUI.Innerjoin;
+import managerUI.MEDialogue;
+import managerUI.METableModel;
+import managerUI.MEqDialogue;
+import managerUI.MEqTableModel;
+import managerUI.MGDialogue;
+import managerUI.MGTableModel;
+import managerUI.MMDialogue;
+import managerUI.MMTableModel;
+import managerUI.MRDialogue;
+import managerUI.MRTableModel;
+import managerUI.MSTableModel;
 
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 import javax.swing.JToolBar;
+import javax.swing.JSeparator;
 
 public class ManagerUI extends Login{
 
@@ -40,6 +56,9 @@ public class ManagerUI extends Login{
 	private JTextField txtbNameMng;
 	private JTable tableManager;
 	private JComboBox comboBoxMng;
+	private JLabel lblQueue;
+	private LinkedList<String> joinQueue;
+	private Boolean isJoinSelected = false;
 	
 	/**
 	 * Launch the application.
@@ -68,9 +87,10 @@ public class ManagerUI extends Login{
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		joinQueue = new LinkedList<>();
 		managerWindow = new JFrame();
 		managerWindow.setTitle("Manager");
-		managerWindow.setBounds(100, 100, 503, 324);
+		managerWindow.setBounds(100, 100, 579, 355);
 		managerWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		managerWindow.getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -119,6 +139,7 @@ public class ManagerUI extends Login{
 		JButton btnSearchMng = new JButton("Search");
 		btnSearchMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				lblQueue.setText("");
 				// Get last name from text field
 				try {
 					if (comboBoxMng.getSelectedItem() == "Member List") {
@@ -229,6 +250,10 @@ public class ManagerUI extends Login{
 		comboBoxMng = new JComboBox();
 		comboBoxMng.setModel(new DefaultComboBoxModel(new String[] {"Employee List", "Member List", "Gym List", "Room List", "Equipment List", "Supplier List"}));
 		panelTopMember.add(comboBoxMng);
+		
+		lblQueue = new JLabel("");
+		panelTopMember.add(lblQueue);
+		lblQueue.setHorizontalAlignment(SwingConstants.LEFT);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setEnabled(false);
@@ -410,6 +435,47 @@ public class ManagerUI extends Login{
 								JOptionPane.ERROR_MESSAGE);
 					}
 				}
+				else if (comboBoxMng.getSelectedItem().equals("Room List")) {
+					try {
+						// get the selected row
+						int row = tableManager.getSelectedRow();
+
+						// make sure a row is selected
+						if (row < 0) {
+							JOptionPane.showMessageDialog(ManagerUI.this, 
+									"You must select a room", "Error", JOptionPane.ERROR_MESSAGE);				
+							return;
+						}
+
+						// prompt the user
+						int response = JOptionPane.showConfirmDialog(
+								ManagerUI.this, "Delete this room?", "Confirm", 
+								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+						if (response != JOptionPane.YES_OPTION) {
+							return;
+						}
+
+						// get the current gym
+						Room tempRoom = (Room) tableManager.getValueAt(row, MRTableModel.OBJECT_COL);
+
+						// delete the member
+						gymDAO.delete(tempRoom.getRid(), "Room");
+
+						// refresh GUI
+						refreshRoomView();
+
+						// show success message
+						JOptionPane.showMessageDialog(ManagerUI.this,
+								"Room deleted succesfully.", "Room Deleted",
+								JOptionPane.INFORMATION_MESSAGE);
+
+					} catch (Exception exc) {
+						JOptionPane.showMessageDialog(ManagerUI.this,
+								"Error deleting gym: " + exc.getMessage(), "Error",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				}
 			}
 		});
 		btnDeleteMng.setBorderPainted(false);
@@ -485,6 +551,222 @@ public class ManagerUI extends Login{
 		});
 		btnEditMng.setBorderPainted(false);
 		toolBarMng.add(btnEditMng);
+		
+		JSeparator separator = new JSeparator();
+		toolBarMng.add(separator);
+		
+		JButton btnSum = new JButton("Sum");
+		btnSum.setBorderPainted(false);
+		btnSum.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// get the selected column name
+				int col = tableManager.getSelectedColumn();
+				String colName = tableManager.getModel().getColumnName(col);
+				
+				
+				// make sure a row is selected
+				if (col < 0) {
+					JOptionPane.showMessageDialog(ManagerUI.this, "You must select a column", "Error",
+							JOptionPane.ERROR_MESSAGE);				
+					return;
+				}
+				// get sum
+				String tableName = comboBoxMng.getSelectedItem().toString();
+				if (tableName.equals("Employee List")){
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+					tableName = tableName + "s";
+				}
+				else if (tableName.equals("Member List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+					tableName = tableName + "s";
+				}
+				else if (tableName.equals("Gym List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+				}
+				int sum = 0;
+				try {
+					sum = gymDAO.getSum(colName, tableName);
+				} catch (Exception exc) {
+					JOptionPane.showMessageDialog(ManagerUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
+				}
+				
+				// show success message
+				JOptionPane.showMessageDialog(ManagerUI.this,
+						"Sum of " + colName + ": " + sum,
+						"Sum",
+						JOptionPane.INFORMATION_MESSAGE);
+				
+			}
+		});
+		toolBarMng.add(btnSum);
+		
+		JButton btnMin = new JButton("Min");
+		btnMin.setBorderPainted(false);
+		btnMin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// get the selected column name
+				int col = tableManager.getSelectedColumn();
+				String colName = tableManager.getModel().getColumnName(col);
+				
+				
+				// make sure a row is selected
+				if (col < 0) {
+					JOptionPane.showMessageDialog(ManagerUI.this, "You must select a column", "Error",
+							JOptionPane.ERROR_MESSAGE);				
+					return;
+				}
+				// get min
+				String tableName = comboBoxMng.getSelectedItem().toString();
+				if (tableName.equals("Employee List")){
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+					tableName = tableName + "s";
+				}
+				else if (tableName.equals("Member List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+					tableName = tableName + "s";
+				}
+				else if (tableName.equals("Gym List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+				}
+				int min = 0;
+				try {
+					min = gymDAO.getMin(colName, tableName);
+				} catch (Exception exc) {
+					JOptionPane.showMessageDialog(ManagerUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
+				}
+				
+				// show success message
+				JOptionPane.showMessageDialog(ManagerUI.this,
+						"Minimum of " + colName + ": " + min,
+						"Minimum",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		toolBarMng.add(btnMin);
+		
+		JButton btnMax = new JButton("Max");
+		btnMax.setBorderPainted(false);
+		btnMax.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// get the selected column name
+				int col = tableManager.getSelectedColumn();
+				String colName = tableManager.getModel().getColumnName(col);
+				
+				
+				// make sure a row is selected
+				if (col < 0) {
+					JOptionPane.showMessageDialog(ManagerUI.this, "You must select a column", "Error",
+							JOptionPane.ERROR_MESSAGE);				
+					return;
+				}
+				// get max
+				String tableName = comboBoxMng.getSelectedItem().toString();
+				if (tableName.equals("Employee List")){
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+					tableName = tableName + "s";
+				}
+				else if (tableName.equals("Member List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+					tableName = tableName + "s";
+				}
+				else if (tableName.equals("Gym List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+				}
+				int max = 0;
+				try {
+					max = gymDAO.getMax(colName, tableName);
+				} catch (Exception exc) {
+					JOptionPane.showMessageDialog(ManagerUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
+				}
+				
+				// show success message
+				JOptionPane.showMessageDialog(ManagerUI.this,
+						"Maximum of " + colName + ": " + max,
+						"Maximum",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		toolBarMng.add(btnMax);
+		
+		JButton btnAvg = new JButton("Avg");
+		btnAvg.setBorderPainted(false);
+		btnAvg.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// get the selected column name
+				int col = tableManager.getSelectedColumn();
+				String colName = tableManager.getModel().getColumnName(col);
+				
+				
+				// make sure a row is selected
+				if (col < 0) {
+					JOptionPane.showMessageDialog(ManagerUI.this, "You must select a column", "Error",
+							JOptionPane.ERROR_MESSAGE);				
+					return;
+				}
+				// get avg
+				String tableName = comboBoxMng.getSelectedItem().toString();
+				if (tableName.equals("Employee List")){
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+					tableName = tableName + "s";
+				}
+				else if (tableName.equals("Member List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+					tableName = tableName + "s";
+				}
+				else if (tableName.equals("Gym List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+				}
+				int avg = 0;
+				try {
+					avg = gymDAO.getAvg(colName, tableName);
+				} catch (Exception exc) {
+					JOptionPane.showMessageDialog(ManagerUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
+				}
+				
+				// show success message
+				JOptionPane.showMessageDialog(ManagerUI.this,
+						"Average of " + colName + ": " + avg,
+						"Average",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		toolBarMng.add(btnAvg);
+		
+		JButton btnJoin = new JButton("Join");
+		btnJoin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//join tables
+				try {
+					List<Innerjoin_Members_Gym> tempInnerJoin = null;
+					tempInnerJoin = gymDAO.joinTable();
+					Innerjoin model = new Innerjoin(tempInnerJoin);
+					tableManager.setModel(model);
+					lblQueue.setText("Join only works on Member and Gym at the moment");
+				} catch (Exception exc) {
+					JOptionPane.showMessageDialog(ManagerUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
+				}
+				
+				joinQueue.clear();
+					
+				
+				
+			}
+		});
+		btnJoin.setBorderPainted(false);
+		toolBarMng.add(btnJoin);
 	}
 	
 	public void refreshEmployeeView() {
@@ -569,6 +851,19 @@ public class ManagerUI extends Login{
 			JOptionPane.showMessageDialog(this, "Error: " + exc, "Error",
 					JOptionPane.ERROR_MESSAGE);
 		}
-		
+	}
+	
+	public int getSum(int col) {
+		int rowsCount = tableManager.getRowCount();
+		int sum = 0;
+		try {
+			for (int i = 0; i < rowsCount; i++) {
+				sum = sum + Integer.parseInt(tableManager.getValueAt(i, col).toString());
+			}
+		} catch (Exception e){
+			JOptionPane.showMessageDialog(this, "Error: " + e, "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		return sum;
 	}
 }

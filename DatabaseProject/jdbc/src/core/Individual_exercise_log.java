@@ -1,15 +1,17 @@
 package core;
+import java.sql.Time;
 import java.util.Date;
 
 public class Individual_exercise_log {
-String log_no;
-String mid;
+int log_no;
+int mid;
 String title;
 String individual_activity_name ;
-Date start_time;
-Date end_time;
-public Individual_exercise_log(String log_no, String mid, String title, String individual_activity_name,
-		Date start_time, Date end_time) {
+Time start_time;
+Time end_time;
+
+public Individual_exercise_log(int log_no, int mid, String title, String individual_activity_name,
+		Time start_time, Time end_time) {
 	this.log_no = log_no;
 	this.mid = mid;
 	this.title = title;
@@ -17,16 +19,16 @@ public Individual_exercise_log(String log_no, String mid, String title, String i
 	this.start_time = start_time;
 	this.end_time = end_time;
 }
-public String getLog_no() {
+public int getLog_no() {
 	return log_no;
 }
-public void setLog_no(String log_no) {
+public void setLog_no(int log_no) {
 	this.log_no = log_no;
 }
-public String getMid() {
+public int getMid() {
 	return mid;
 }
-public void setMid(String mid) {
+public void setMid(int mid) {
 	this.mid = mid;
 }
 public String getTitle() {
@@ -41,16 +43,16 @@ public String getIndividual_activity_name() {
 public void setIndividual_activity_name(String individual_activity_name) {
 	this.individual_activity_name = individual_activity_name;
 }
-public Date getStart_time() {
+public Time getStart_time() {
 	return start_time;
 }
-public void setStart_time(Date start_time) {
+public void setStart_time(Time start_time) {
 	this.start_time = start_time;
 }
-public Date getEnd_time() {
+public Time getEnd_time() {
 	return end_time;
 }
-public void setEnd_time(Date end_time) {
+public void setEnd_time(Time end_time) {
 	this.end_time = end_time;
 }
 
