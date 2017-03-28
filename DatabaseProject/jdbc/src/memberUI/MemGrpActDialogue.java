@@ -22,8 +22,13 @@ import com.github.lgooddatepicker.components.TimePicker;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.sql.Time;
+import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.awt.event.ActionEvent;
+import com.github.lgooddatepicker.components.DateTimePicker;
 
 public class MemGrpActDialogue extends JDialog {
 
@@ -35,9 +40,10 @@ public class MemGrpActDialogue extends JDialog {
 	private Group_exercise_log previousLog;
 	private boolean updateMode = false;
 	private JTextField textFieldTitle;
-	private TimePicker timePickerStart;
-	private TimePicker timePickerEnd;
 	private JTextField textFieldGid;
+	
+	private DateTimePicker dateTimePickerStart;
+	private DateTimePicker dateTimePickerEnd;
 
 	/**
 	 * Launch the application.
@@ -57,8 +63,9 @@ public class MemGrpActDialogue extends JDialog {
 	private void populateGui(Group_exercise_log previousLog) {
 		textFieldTitle.setText(previousLog.getTitle());
 		textFieldGid.setText(String.valueOf(previousLog.getGid()));
-		timePickerStart.setText(previousLog.getStart_time().toString());
-		timePickerEnd.setText(previousLog.getEnd_time().toString());
+		String str = previousLog.getStart_time().toString();
+//		dateTimePickerStart.getTimePicker().setText(previousLog.);
+//		dateTimePickerEnd.setText(previousLog.getEnd_time().toString());
 	}
 
 	/**
@@ -107,16 +114,24 @@ public class MemGrpActDialogue extends JDialog {
 			contentPanel.add(lblStartTime, "2, 6");
 		}
 		{
-			timePickerStart = new TimePicker();
-			contentPanel.add(timePickerStart, "4, 6, fill, fill");
+			dateTimePickerStart = new DateTimePicker();
+			dateTimePickerStart.getTimePicker().getComponentToggleTimeMenuButton().setEnabled(false);
+			dateTimePickerStart.getDatePicker().getComponentToggleCalendarButton().setEnabled(false);
+			dateTimePickerStart.getTimePicker().getComponentTimeTextField().setEnabled(false);
+			dateTimePickerStart.getDatePicker().getComponentDateTextField().setEnabled(false);
+			contentPanel.add(dateTimePickerStart, "4, 6, fill, fill");
 		}
 		{
 			JLabel lblEndTime = new JLabel("End Time:");
 			contentPanel.add(lblEndTime, "2, 8");
 		}
 		{
-			timePickerEnd = new TimePicker();
-			contentPanel.add(timePickerEnd, "4, 8, fill, fill");
+			dateTimePickerEnd = new DateTimePicker();
+			dateTimePickerEnd.getTimePicker().getComponentToggleTimeMenuButton().setEnabled(false);
+			dateTimePickerEnd.getDatePicker().getComponentToggleCalendarButton().setEnabled(false);
+			dateTimePickerEnd.getTimePicker().getComponentTimeTextField().setEnabled(false);
+			dateTimePickerEnd.getDatePicker().getComponentDateTextField().setEnabled(false);
+			contentPanel.add(dateTimePickerEnd, "4, 8, fill, fill");
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -156,15 +171,23 @@ public class MemGrpActDialogue extends JDialog {
 		// get the employee info from gui
 		String title = textFieldTitle.getText();
 		int gid = Integer.parseInt(textFieldGid.getText());
-		Time start_time;
-		Time end_time;
+		Timestamp start_time;
+		Timestamp end_time;
 		try {
-			start_time = java.sql.Time.valueOf(timePickerStart.getTime());
+			String date = dateTimePickerStart.datePicker.getText() + " " + dateTimePickerStart.timePicker.getText();
+			DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
+			Date parsedDate = df.parse(date);
+			Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
+			start_time = ts;
 		} catch (Exception e){
 			start_time = null;
 		}
 		try {
-			end_time = java.sql.Time.valueOf(timePickerEnd.getTime());
+			String date = dateTimePickerEnd.datePicker.getText() + " " + dateTimePickerEnd.timePicker.getText();
+			DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
+			Date parsedDate = df.parse(date);
+			Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
+			end_time = ts;
 		} catch (Exception e) {
 			end_time = null;
 		}

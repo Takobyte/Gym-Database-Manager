@@ -63,7 +63,7 @@ public class MemberUI extends JFrame {
 	private void initialize() {
 		setTitle("Member");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 307);
+		setBounds(100, 100, 656, 307);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -117,7 +117,7 @@ public class MemberUI extends JFrame {
 		scrollPane.setViewportView(tableMember);
 		try {
 			List<Innerjoin_Ind_Grp_Activity> tempActivity = null;
-			tempActivity = gymDAO.searchActivity();
+			tempActivity = gymDAO.searchActivity(mid);
 			
 			MemActivityTableModel model = new MemActivityTableModel(tempActivity);
 			tableMember.setModel(model);
@@ -133,7 +133,10 @@ public class MemberUI extends JFrame {
 		JButton btnSignOut = new JButton("Sign Out");
 		btnSignOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//TODO: Go back to login
+				setVisible(false);
+				dispose();
+				Login loginUI = new Login();
+				loginUI.setVisible(true);
 			}
 		});
 		
@@ -204,6 +207,7 @@ public class MemberUI extends JFrame {
 	
 					// show dialog
 					dialog.setVisible(true);
+					
 				}
 				else {
 					// create dialog
@@ -230,7 +234,7 @@ public class MemberUI extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					List<Innerjoin_Ind_Grp_Activity> tempActivity = null;
-					tempActivity = gymDAO.searchActivity();
+					tempActivity = gymDAO.searchActivity(mid);
 					
 					MemActivityTableModel model = new MemActivityTableModel(tempActivity);
 					tableMember.setModel(model);
@@ -250,6 +254,8 @@ public class MemberUI extends JFrame {
 			MemIndActTableModel model = new MemIndActTableModel(indActivity);
 
 			tableMember.setModel(model);
+			tableMember.getColumnModel().getColumn(3).setCellRenderer(new TimestampCellRenderer());
+			tableMember.getColumnModel().getColumn(4).setCellRenderer(new TimestampCellRenderer());
 		} catch (Exception exc) {
 			JOptionPane.showMessageDialog(this, "Error: " + exc, "Error",
 					JOptionPane.ERROR_MESSAGE);
@@ -264,6 +270,8 @@ public class MemberUI extends JFrame {
 			MemGrpActTableModel model = new MemGrpActTableModel(grpActivity);
 
 			tableMember.setModel(model);
+			tableMember.getColumnModel().getColumn(3).setCellRenderer(new TimestampCellRenderer());
+			tableMember.getColumnModel().getColumn(4).setCellRenderer(new TimestampCellRenderer());
 		} catch (Exception exc) {
 			JOptionPane.showMessageDialog(this, "Error: " + exc, "Error",
 					JOptionPane.ERROR_MESSAGE);

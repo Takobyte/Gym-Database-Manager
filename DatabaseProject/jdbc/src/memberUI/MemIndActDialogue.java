@@ -21,25 +21,30 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
 import java.sql.Time;
+import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 import com.github.lgooddatepicker.components.TimePicker;
 import javax.swing.SwingConstants;
+import com.github.lgooddatepicker.components.DateTimePicker;
 
 public class MemIndActDialogue extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textFieldTitle;
 	private JTextField textFieldActivityName;
-	private TimePicker timePickerStart;
-	private TimePicker timePickerEnd;
 	
 	private MemberUI memberUI;
 	private GymDAO gymDAO;
 	
 	private Individual_exercise_log previousIndAct;
 	private boolean updateMode = false;
+	
+	private DateTimePicker dateTimePickerEnd;
+	private DateTimePicker dateTimePickerStart;
 	
 
 	/**
@@ -60,8 +65,14 @@ public class MemIndActDialogue extends JDialog {
 	private void populateGui(Individual_exercise_log log) {
 		textFieldTitle.setText(log.getTitle());
 		textFieldActivityName.setText(log.getIndividual_activity_name());
-		timePickerStart.setText(log.getStart_time().toString());
-		timePickerEnd.setText(log.getEnd_time().toString());
+		String str = log.getStart_time().toString();
+		String[] splitStr = str.split("\\s+");
+		dateTimePickerStart.datePicker.setText(splitStr[0]);
+		dateTimePickerStart.timePicker.setText(splitStr[1]);
+		String str2 = log.getEnd_time().toString();
+		String[] splitStr2 = str2.split("\\s+");
+		dateTimePickerEnd.datePicker.setText(splitStr2[0]);
+		dateTimePickerEnd.timePicker.setText(splitStr2[1]);
 	}
 
 	/**
@@ -111,8 +122,8 @@ public class MemIndActDialogue extends JDialog {
 			contentPanel.add(lblStartTime, "2, 6");
 		}
 		{
-			timePickerStart = new TimePicker();
-			contentPanel.add(timePickerStart, "4, 6, fill, fill");
+			dateTimePickerStart = new DateTimePicker();
+			contentPanel.add(dateTimePickerStart, "4, 6, fill, fill");
 		}
 		{
 			JLabel lblEndTime = new JLabel("End time:");
@@ -120,8 +131,8 @@ public class MemIndActDialogue extends JDialog {
 			contentPanel.add(lblEndTime, "2, 8");
 		}
 		{
-			timePickerEnd = new TimePicker();
-			contentPanel.add(timePickerEnd, "4, 8, fill, fill");
+			dateTimePickerEnd = new DateTimePicker();
+			contentPanel.add(dateTimePickerEnd, "4, 8, fill, fill");
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -161,15 +172,23 @@ public class MemIndActDialogue extends JDialog {
 		// get the employee info from gui
 		String title = textFieldTitle.getText();
 		String activityName = textFieldActivityName.getText();
-		Time start_time;
-		Time end_time;
+		Timestamp start_time;
+		Timestamp end_time;
 		try {
-			start_time = java.sql.Time.valueOf(timePickerStart.getTime());
+			String date = dateTimePickerStart.datePicker.getText() + " " + dateTimePickerStart.timePicker.getText();
+			DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
+			Date parsedDate = df.parse(date);
+			Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
+			start_time = ts;
 		} catch (Exception e){
 			start_time = null;
 		}
 		try {
-			end_time = java.sql.Time.valueOf(timePickerEnd.getTime());
+			String date = dateTimePickerEnd.datePicker.getText() + " " + dateTimePickerEnd.timePicker.getText();
+			DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
+			Date parsedDate = df.parse(date);
+			Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
+			end_time = ts;
 		} catch (Exception e) {
 			end_time = null;
 		}

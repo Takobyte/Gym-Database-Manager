@@ -1,17 +1,16 @@
 package core;
-import java.sql.Time;
-import java.util.Date;
+import java.sql.Timestamp;
 
 public class Individual_exercise_log {
 int log_no;
 int mid;
 String title;
 String individual_activity_name ;
-Time start_time;
-Time end_time;
+Timestamp start_time;
+Timestamp end_time;
 
 public Individual_exercise_log(int log_no, int mid, String title, String individual_activity_name,
-		Time start_time, Time end_time) {
+		Timestamp start_time, Timestamp end_time) {
 	this.log_no = log_no;
 	this.mid = mid;
 	this.title = title;
@@ -43,16 +42,16 @@ public String getIndividual_activity_name() {
 public void setIndividual_activity_name(String individual_activity_name) {
 	this.individual_activity_name = individual_activity_name;
 }
-public Time getStart_time() {
+public Timestamp getStart_time() {
 	return start_time;
 }
-public void setStart_time(Time start_time) {
+public void setStart_time(Timestamp start_time) {
 	this.start_time = start_time;
 }
-public Time getEnd_time() {
+public Timestamp getEnd_time() {
 	return end_time;
 }
-public void setEnd_time(Time end_time) {
+public void setEnd_time(Timestamp end_time) {
 	this.end_time = end_time;
 }
 

@@ -41,6 +41,7 @@ import managerUI.MMDialogue;
 import managerUI.MMTableModel;
 import managerUI.MRDialogue;
 import managerUI.MRTableModel;
+import managerUI.MSDialogue;
 import managerUI.MSTableModel;
 
 import javax.swing.JComboBox;
@@ -296,11 +297,10 @@ public class ManagerUI extends Login{
 					MEqDialogue dialog = new MEqDialogue(ManagerUI.this, gymDAO, null, false);
 					dialog.setVisible(true);
 				}
-				//TODO: uncomment this later
-//				else if (comboBoxMng.getSelectedItem() == "Supplier List") {
-//					MSDialogue dialog = new MSDialogue(ManagerUI.this, gymDAO, null, false);
-//					dialog.setVisible(true);
-//				}
+				else if (comboBoxMng.getSelectedItem() == "Supplier List") {
+					MSDialogue dialog = new MSDialogue(ManagerUI.this, gymDAO, null, false);
+					dialog.setVisible(true);
+				}
 			}
 		});
 		btnInsertMng.setBorderPainted(false);
@@ -309,8 +309,6 @@ public class ManagerUI extends Login{
 		JButton btnDeleteMng = new JButton("Delete");
 		btnDeleteMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO: transform this method so that it edits Member, employee, gym, etc (DO NOT CREATE NEW IF ELSE
-				// FOR employee,etc)
 				if (comboBoxMng.getSelectedItem().equals("Member List")) {
 					try {
 						// get the selected row
@@ -484,8 +482,6 @@ public class ManagerUI extends Login{
 		JButton btnEditMng = new JButton("Edit");
 		btnEditMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO: transform this method so that it edits Member, employee, gym, etc (DO NOT CREATE NEW IF ELSE
-				// FOR employee,etc)
 				if (comboBoxMng.getSelectedItem().equals("Member List")) {
 					// get the selected item
 					int row = tableManager.getSelectedRow();
@@ -586,6 +582,19 @@ public class ManagerUI extends Login{
 					tableName = tableName.replaceAll("List", "");
 					tableName = tableName.trim();
 				}
+				else if (tableName.equals("Supplier List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+					tableName = tableName + "s";
+				}
+				else if (tableName.equals("Equipment List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+				}
+				else if (tableName.equals("Room List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+				}
 				int sum = 0;
 				try {
 					sum = gymDAO.getSum(colName, tableName);
@@ -598,7 +607,6 @@ public class ManagerUI extends Login{
 						"Sum of " + colName + ": " + sum,
 						"Sum",
 						JOptionPane.INFORMATION_MESSAGE);
-				
 			}
 		});
 		toolBarMng.add(btnSum);
@@ -631,6 +639,19 @@ public class ManagerUI extends Login{
 					tableName = tableName + "s";
 				}
 				else if (tableName.equals("Gym List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+				}
+				else if (tableName.equals("Supplier List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+					tableName = tableName + "s";
+				}
+				else if (tableName.equals("Equipment List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+				}
+				else if (tableName.equals("Room List")) {
 					tableName = tableName.replaceAll("List", "");
 					tableName = tableName.trim();
 				}
@@ -681,6 +702,19 @@ public class ManagerUI extends Login{
 					tableName = tableName.replaceAll("List", "");
 					tableName = tableName.trim();
 				}
+				else if (tableName.equals("Supplier List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+					tableName = tableName + "s";
+				}
+				else if (tableName.equals("Equipment List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+				}
+				else if (tableName.equals("Room List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+				}
 				int max = 0;
 				try {
 					max = gymDAO.getMax(colName, tableName);
@@ -725,6 +759,19 @@ public class ManagerUI extends Login{
 					tableName = tableName + "s";
 				}
 				else if (tableName.equals("Gym List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+				}
+				else if (tableName.equals("Supplier List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+					tableName = tableName + "s";
+				}
+				else if (tableName.equals("Equipment List")) {
+					tableName = tableName.replaceAll("List", "");
+					tableName = tableName.trim();
+				}
+				else if (tableName.equals("Room List")) {
 					tableName = tableName.replaceAll("List", "");
 					tableName = tableName.trim();
 				}

@@ -68,7 +68,7 @@ public class Login extends JFrame {
 		
 		setTitle("Login");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 337, 186);
+		setBounds(100, 100, 263, 167);
 		loginMainBox = new JPanel();
 		loginMainBox.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(loginMainBox);
@@ -100,6 +100,7 @@ public class Login extends JFrame {
 		loginPanel.add(loginPswrdLbl);
 		
 		loginPassText = new JTextField();
+		loginPassText.setEnabled(false);
 		loginPassText.setBounds(102, 27, 119, 20);
 		loginPanel.add(loginPassText);
 		loginPassText.setColumns(10);
@@ -124,13 +125,13 @@ public class Login extends JFrame {
 //							"Not available at the moment.",
 //							"Error",
 //							JOptionPane.INFORMATION_MESSAGE);
-					setVisible(false);
 					try {
 						mid = Integer.parseInt(loginUserText.getText());
 						Member member = new Member(0, "", "", null, "", null, null, 0);
 						member = gymDAO.fetchMember(member,mid);
 						MemberUI memberUI = new MemberUI(gymDAO, member);
 						memberUI.setVisible(true);
+						setVisible(false);
 					} catch (Exception e) {
 						JOptionPane.showMessageDialog(Login.this,
 								"Username does not exist.",

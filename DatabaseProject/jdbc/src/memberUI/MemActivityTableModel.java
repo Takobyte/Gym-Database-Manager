@@ -10,7 +10,7 @@ import core.Innerjoin_Ind_Grp_Activity;
 public class MemActivityTableModel extends AbstractTableModel {
 	// follow example given by other TableModels
 	public static final int OBJECT_COL = -1;
-	private String[] columnNames = {"title","start_time","end_time", "type"};
+	private String[] columnNames = {"activity_name","start_time","end_time", "type"};
 	private List<Innerjoin_Ind_Grp_Activity> activityLog;
 	
 	public MemActivityTableModel(List<Innerjoin_Ind_Grp_Activity> activityLog) {
@@ -47,13 +47,13 @@ public class MemActivityTableModel extends AbstractTableModel {
 		Innerjoin_Ind_Grp_Activity tempActivity = activityLog.get(row);
 
 		switch (col) {
-		case 1:
+		case 0:
 			return tempActivity.getActivity_name();
-		case 2:
+		case 1:
 			return tempActivity.getStart_time();
-		case 3:
+		case 2:
 			return tempActivity.getEnd_time();
-		case 4:
+		case 3:
 			return tempActivity.getType();
 		case OBJECT_COL:
 			return tempActivity;

@@ -22,7 +22,7 @@ public class GymDAO {
 
 	public GymDAO() throws Exception {
 		// Get a connection to database
-		myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/gym5?useSSL=false", "root", "password");
+		myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/gym?useSSL=false", "root", "password.");
 
 		// Create a statement
 		Statement myStmt = myConn.createStatement();
@@ -312,7 +312,7 @@ public class GymDAO {
 		}
 	}
 
-	public List<Innerjoin_Ind_Grp_Activity> searchActivity() throws SQLException {
+	public List<Innerjoin_Ind_Grp_Activity> searchActivity(int mid) throws SQLException {
 		List<Innerjoin_Ind_Grp_Activity> list = new ArrayList<>();
 
 		PreparedStatement myStmt = null;
@@ -320,8 +320,18 @@ public class GymDAO {
 
 		try {
 			myStmt = myConn.prepareStatement("select * from individual_exercise_logs "
-					+ "inner join group_exercise_logs on individual_exercise_logs.mid = group_exercise_logs.mid");
+					+ "where individual_exercise_logs.mid = " + mid);
 
+			myRs = myStmt.executeQuery();
+			while(myRs.next()) {
+				Innerjoin_Ind_Grp_Activity tempInnerjoin = convertRowToActivity(myRs);
+				list.add(tempInnerjoin);
+			}
+			close(myStmt, myRs);
+
+			myStmt = myConn.prepareStatement("select g.gid, g.title, c.start_time, c.end_time "
+					+ "from group_exercise_logs as g, group_classes as c "
+					+ "where g.gid = c.gid AND g.mid = " + mid);
 
 			myRs = myStmt.executeQuery();
 			while(myRs.next()) {
@@ -337,25 +347,23 @@ public class GymDAO {
 	}
 
 	private Innerjoin_Ind_Grp_Activity convertRowToActivity(ResultSet myRs) throws SQLException{
-		int mid = myRs.getInt("individual_exercise_logs.mid");
-		int gid = myRs.getInt("group_exercise_logs.gid");
+		int mid;
+		int gid;
 		String activityName;
-		Date start_time;
-		Date end_time;
+		Timestamp start_time;
+		Timestamp end_time;
 		String type;
-
-		// If it's group exercise
-		if (gid == 0) {
-			activityName = myRs.getString("group_exercise_logs.title");
-			start_time = myRs.getDate("group_exercise_logs.start_time");
-			end_time = myRs.getDate("group_exercise_logs.end_time");
+		try {
+			gid = myRs.getInt("gid");
+			activityName = myRs.getString("title");
+			start_time = myRs.getTimestamp("start_time");
+			end_time = myRs.getTimestamp("end_time");
 			type = "Group";
-		}
-		// If it's individual exercise
-		else {
-			activityName = myRs.getString("individual_exercise_logs.title");
-			start_time = myRs.getDate("individual_exercise_logs.start_time");
-			end_time = myRs.getDate("individual_exercise_logs.end_time");
+		} catch (SQLException e) {
+			mid = myRs.getInt("mid");
+			activityName = myRs.getString("individual_activity_name");
+			start_time = myRs.getTimestamp("start_time");
+			end_time = myRs.getTimestamp("end_time");
 			type = "Member";
 		}
 
@@ -673,14 +681,44 @@ public class GymDAO {
 		}
 	}
 
-	public List<Equipment> searchEquipments(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Equipment> searchEquipments(String name) throws SQLException {
+		List<Equipment> list = new ArrayList<>();
+		PreparedStatement myStmt = null;
+		ResultSet myRs = null;
+		try {
+			name = "%" + name + "%";
+			myStmt = myConn.prepareStatement("select * from Equipment where name like ?");
+			myStmt.setString(1, name);
+			myRs = myStmt.executeQuery();
+			while (myRs.next()) {
+				Equipment tempEq = convertRowToEq(myRs);
+				list.add(tempEq);
+			}
+			return list;
+		}
+		finally {
+			close(myStmt, myRs);
+		}
 	}
 
-	public List<Supplier> searchSuppliers(String name) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Supplier> searchSuppliers(String name) throws SQLException {
+		List<Supplier> list = new ArrayList<>();
+		PreparedStatement myStmt = null;
+		ResultSet myRs = null;
+		try {
+			name = "%" + name + "%";
+			myStmt = myConn.prepareStatement("select * from Suppliers where name like ?");
+			myStmt.setString(1, name);
+			myRs = myStmt.executeQuery();
+			while (myRs.next()) {
+				Supplier tempSupp = convertRowToSupplier(myRs);
+				list.add(tempSupp);
+			}
+			return list;
+		}
+		finally {
+			close(myStmt, myRs);
+		}
 	}
 
 	public void updateGym(Gym tempGym) throws SQLException {
@@ -925,8 +963,8 @@ public class GymDAO {
 			// set params
 			myStmt.setString(1, indActivity.getTitle());
 			myStmt.setString(2, indActivity.getIndividual_activity_name());
-			myStmt.setTime(3, indActivity.getStart_time());
-			myStmt.setTime(4, indActivity.getEnd_time());
+			myStmt.setTimestamp(3, indActivity.getStart_time());
+			myStmt.setTimestamp(4, indActivity.getEnd_time());
 			myStmt.setInt(5, indActivity.getLog_no());
 
 			// execute SQL
@@ -950,8 +988,8 @@ public class GymDAO {
 			myStmt.setInt(1, tempIndAct.getMid());
 			myStmt.setString(2, tempIndAct.getTitle());
 			myStmt.setString(3, tempIndAct.getIndividual_activity_name());
-			myStmt.setTime(4, tempIndAct.getStart_time());
-			myStmt.setTime(5, tempIndAct.getEnd_time());
+			myStmt.setTimestamp(4, tempIndAct.getStart_time());
+			myStmt.setTimestamp(5, tempIndAct.getEnd_time());
 
 			// execute SQL
 			myStmt.executeUpdate();
@@ -989,8 +1027,8 @@ public class GymDAO {
 		int mid = myRs.getInt("mid");
 		String title = myRs.getString("title");
 		String individual_activity_name = myRs.getString("individual_activity_name");
-		Time start_time = myRs.getTime("start_time");
-		Time end_time = myRs.getTime("end_time");
+		Timestamp start_time = myRs.getTimestamp("start_time");
+		Timestamp end_time = myRs.getTimestamp("end_time");
 		Individual_exercise_log tempLog = new Individual_exercise_log(log_no,mid,title,individual_activity_name,start_time
 				,end_time);
 		return tempLog;
@@ -1035,8 +1073,8 @@ public class GymDAO {
 			// set params
 			myStmt.setString(1, tempGrpAct.getTitle());
 			myStmt.setInt(2, tempGrpAct.getGid());
-			myStmt.setTime(3, tempGrpAct.getStart_time());
-			myStmt.setTime(4, tempGrpAct.getEnd_time());
+			myStmt.setTimestamp(3, tempGrpAct.getStart_time());
+			myStmt.setTimestamp(4, tempGrpAct.getEnd_time());
 			myStmt.setInt(5, tempGrpAct.getLog_no());
 
 			// execute SQL
@@ -1053,15 +1091,15 @@ public class GymDAO {
 		try {
 			// prepare statement
 			myStmt = myConn.prepareStatement("insert into group_exercise_logs"
-					+ " (title, mid, gid, start_time, end_time)"
-					+ " values (?, ?, ?, ?, ?)");
+					+ " (title, mid, gid)"
+					+ " values (?, ?, ?)");
 
 			// set parameters
 			myStmt.setString(1, tempGrpAct.getTitle());
 			myStmt.setInt(2, tempGrpAct.getMid());
 			myStmt.setInt(3, tempGrpAct.getGid());
-			myStmt.setTime(4, tempGrpAct.getStart_time());
-			myStmt.setTime(5, tempGrpAct.getEnd_time());
+//			myStmt.setTimestamp(4, tempGrpAct.getStart_time());
+//			myStmt.setTimestamp(5, tempGrpAct.getEnd_time());
 
 			// execute SQL
 			myStmt.executeUpdate();
@@ -1080,7 +1118,9 @@ public class GymDAO {
 
 		try {
 			myStmt = myConn.createStatement();
-			myRs = myStmt.executeQuery("select * from group_exercise_logs where mid = " + mid);
+			myRs = myStmt.executeQuery("select l.log_no, l.title, l.mid, l.gid, g.start_time, g.end_time "
+					+ "from group_exercise_logs AS l, group_classes AS g "
+					+ "where l.gid = g.gid AND l.mid = " + mid);
 
 			while (myRs.next()) {
 				Group_exercise_log tempLog = convertRowToGrpAct(myRs);
@@ -1099,9 +1139,54 @@ public class GymDAO {
 		String title = myRs.getString("title");
 		int mid = myRs.getInt("mid");
 		int gid = myRs.getInt("gid");
-		Time start_time = myRs.getTime("start_time");
-		Time end_time = myRs.getTime("end_time");
+		Timestamp start_time = myRs.getTimestamp("start_time");
+		Timestamp end_time = myRs.getTimestamp("end_time");
 		Group_exercise_log tempLog = new Group_exercise_log(log_no,title,mid,gid,start_time,end_time);
 		return tempLog;
+	}
+
+	public void updateSupplier(Supplier tempSupp) throws SQLException{
+		PreparedStatement myStmt = null;
+
+		try {
+			// prepare statement
+			myStmt = myConn.prepareStatement("update Suppliers"
+					+ " set name=?, telephone=?, address=?"
+					+ " where sid=?");
+
+			// set params
+			myStmt.setString(1, tempSupp.getName());
+			myStmt.setString(2, tempSupp.getTelephone());
+			myStmt.setString(2, tempSupp.getAddress());
+			myStmt.setInt(4, tempSupp.getSid());
+
+			// execute SQL
+			myStmt.executeUpdate();
+		}
+		finally {
+			close(myStmt, null);
+		}
+	}
+
+	public void addSupplier(Supplier tempSupp) throws SQLException {
+		PreparedStatement myStmt = null;
+
+		try {
+			// prepare statement
+			myStmt = myConn.prepareStatement("insert into suppliers"
+					+ " (name, telephone, address)"
+					+ " values (?, ?, ?)");
+
+			// set parameters
+			myStmt.setString(1, tempSupp.getName());
+			myStmt.setString(2, tempSupp.getTelephone());
+			myStmt.setString(3, tempSupp.getAddress());
+
+			// execute SQL
+			myStmt.executeUpdate();
+		}
+		finally {
+			close(myStmt,null);
+		}
 	}
 }
