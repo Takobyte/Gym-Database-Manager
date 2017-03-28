@@ -85,12 +85,14 @@ create table class_type
 create table group_classes
 	(gid integer auto_increment,
 	price_for_std_member real,
-	start_time time,
-	end_time time,
+	start_time datetime,
+	end_time datetime,
 	rid integer not null,
+	class_name char (40) not null,
 	unique (rid, start_time, end_time),
 	primary key (gid),
-	foreign key (rid) references room (rid) on delete cascade);
+	foreign key (rid) references room (rid) on delete cascade,
+	foreign key (class_name) references class_type (class_name) on delete cascade);
     
 create table teaches 
 	(emp_id integer not null,
@@ -134,8 +136,6 @@ create table group_exercise_logs
 	title char (40),
 	mid integer not null,
 	gid integer not null,
-    start_time time,
-	end_time time,
 	primary key (log_no, mid),
 	foreign key (mid) references members (mid) on delete cascade,
 	foreign key (gid) references group_classes (gid));
@@ -147,55 +147,11 @@ create table individual_activity_type
 create table individual_exercise_logs 
 	(log_no integer auto_increment,
 	mid integer not null,
-	title char (40),
+    title char (40),
 	individual_activity_name char (40),
-	start_time time,
-	end_time time,
+	start_time datetime,
+	end_time datetime,
 	unique (mid,start_time,end_time),
 	primary key (log_no,mid),
 	foreign key (mid) references members (mid) on delete cascade,
 	foreign key (individual_activity_name) references individual_activity_type (individual_activity_name) on delete cascade);
-
-insert into gym
-values (NULL, 'Hello World', 'Coquitlam', '2017-11-25', '604-111-2222');
-    
-insert into employees
-values (NULL, 'Linda Wilson', 'trainer', 9700, '3046 BROTHERHOOD WAY', '1975-02-23', 69367163, 0, 1);
-
-insert into employees
-values (NULL, 'Elizabeth So', 'trainer', 6200, '7893 EUGENIA AVE', '1990-12-11', 11487177, 0, 1);
-
-insert into employees
-values (NULL, 'Thomas Williams', 'trainer', 8500, '4852 MERRIMAC ST', '1980-12-23', 91249357, 0, 1);
-
-insert into employees
-values (NULL, 'Joseph Rodriguez', 'trainer', 5000, '4531 BERNICE ST', '1985-02-20', 41204813, 0, 1);
-
-insert into employees
-values (NULL, 'Richard Iwasaki', 'trainer', 9800, '4844 BAY SHORE BLVD ON RAMP', '1987-01-21', 30698487, 0, 1);
-
-insert into employees
-values (NULL, 'Mark Brown', 'trainer', 8900, '8749 RHINE ST', '1981-03-01', 71784769, 0, 1);
-
-insert into employees
-values (NULL, 'Robert Jackson', 'trainer', 4200, '7088 ZIRCON PL', '1977-07-27', 21783141, 0, 1);
-
-insert into employees
-values (NULL, 'Patricia Wilson', 'trainer', 9400, '6870 PORTAL PATH', '1976-07-15', 54194963, 0, 1);
-
-insert into employees
-values (NULL, 'Barbara Miller', 'trainer', 1900, '6900 FORT MILEY 5', '1988-10-26', 40916214, 0, 1);
-
-insert into employees
-values (NULL, 'David Anderson', 'trainer', 1100, '2531 LORAINE CT', '1971-12-17', 71351479, 0, 1);
-
-insert into members
-values (NULL, 'Jung Wook So', '604-111-2222', '1991-11-25', 'Port Moody', '2017-11-25', NULL, 1);
-
-insert into individual_activity_type
-values ('Yoga');
-
-insert into individual_exercise_logs
-(mid, title, individual_activity_name, start_time, end_time)
-values (1, 'Yoga', 'Yoga', '12:00:00', '12:11:00');
-
