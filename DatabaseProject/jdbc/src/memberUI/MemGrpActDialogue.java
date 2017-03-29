@@ -41,9 +41,6 @@ public class MemGrpActDialogue extends JDialog {
 	private boolean updateMode = false;
 	private JTextField textFieldTitle;
 	private JTextField textFieldGid;
-	
-	private DateTimePicker dateTimePickerStart;
-	private DateTimePicker dateTimePickerEnd;
 
 	/**
 	 * Launch the application.
@@ -73,7 +70,7 @@ public class MemGrpActDialogue extends JDialog {
 	 */
 	public MemGrpActDialogue() {
 		setTitle("Add Group Activity");
-		setBounds(100, 100, 450, 200);
+		setBounds(100, 100, 450, 149);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -101,37 +98,13 @@ public class MemGrpActDialogue extends JDialog {
 			textFieldTitle.setColumns(10);
 		}
 		{
-			JLabel lblGroupId = new JLabel("Group ID:");
+			JLabel lblGroupId = new JLabel("Class ID:");
 			contentPanel.add(lblGroupId, "2, 4, right, default");
 		}
 		{
 			textFieldGid = new JTextField();
 			contentPanel.add(textFieldGid, "4, 4, fill, default");
 			textFieldGid.setColumns(10);
-		}
-		{
-			JLabel lblStartTime = new JLabel("Start time:");
-			contentPanel.add(lblStartTime, "2, 6");
-		}
-		{
-			dateTimePickerStart = new DateTimePicker();
-			dateTimePickerStart.getTimePicker().getComponentToggleTimeMenuButton().setEnabled(false);
-			dateTimePickerStart.getDatePicker().getComponentToggleCalendarButton().setEnabled(false);
-			dateTimePickerStart.getTimePicker().getComponentTimeTextField().setEnabled(false);
-			dateTimePickerStart.getDatePicker().getComponentDateTextField().setEnabled(false);
-			contentPanel.add(dateTimePickerStart, "4, 6, fill, fill");
-		}
-		{
-			JLabel lblEndTime = new JLabel("End Time:");
-			contentPanel.add(lblEndTime, "2, 8");
-		}
-		{
-			dateTimePickerEnd = new DateTimePicker();
-			dateTimePickerEnd.getTimePicker().getComponentToggleTimeMenuButton().setEnabled(false);
-			dateTimePickerEnd.getDatePicker().getComponentToggleCalendarButton().setEnabled(false);
-			dateTimePickerEnd.getTimePicker().getComponentTimeTextField().setEnabled(false);
-			dateTimePickerEnd.getDatePicker().getComponentDateTextField().setEnabled(false);
-			contentPanel.add(dateTimePickerEnd, "4, 8, fill, fill");
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -170,39 +143,42 @@ public class MemGrpActDialogue extends JDialog {
 		
 		// get the employee info from gui
 		String title = textFieldTitle.getText();
+		String activity_name = textFieldTitle.getText();
 		int gid = Integer.parseInt(textFieldGid.getText());
-		Timestamp start_time;
-		Timestamp end_time;
-		try {
-			String date = dateTimePickerStart.datePicker.getText() + " " + dateTimePickerStart.timePicker.getText();
-			DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
-			Date parsedDate = df.parse(date);
-			Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
-			start_time = ts;
-		} catch (Exception e){
-			start_time = null;
-		}
-		try {
-			String date = dateTimePickerEnd.datePicker.getText() + " " + dateTimePickerEnd.timePicker.getText();
-			DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
-			Date parsedDate = df.parse(date);
-			Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
-			end_time = ts;
-		} catch (Exception e) {
-			end_time = null;
-		}
+//		Timestamp start_time;
+//		Timestamp end_time;
+//		try {
+//			String date = dateTimePickerStart.datePicker.getText() + " " + dateTimePickerStart.timePicker.getText();
+//			DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
+//			Date parsedDate = df.parse(date);
+//			Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
+//			start_time = ts;
+//		} catch (Exception e){
+//			start_time = null;
+//		}
+//		try {
+//			String date = dateTimePickerEnd.datePicker.getText() + " " + dateTimePickerEnd.timePicker.getText();
+//			DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
+//			Date parsedDate = df.parse(date);
+//			Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
+//			end_time = ts;
+//		} catch (Exception e) {
+//			end_time = null;
+//		}
 
 		Group_exercise_log tempGrpAct = null;
 		
 		if (updateMode) {
 			tempGrpAct = previousLog;
 			tempGrpAct.setTitle(title);
-			tempGrpAct.setStart_time(start_time);
-			tempGrpAct.setEnd_time(end_time);
+			tempGrpAct.setGid(gid);
+//			tempGrpAct.setStart_time(start_time);
+//			tempGrpAct.setEnd_time(end_time);
+			tempGrpAct.setActivity_name(activity_name);
 			
 		}
 		else {
-			tempGrpAct = new Group_exercise_log(0,title,memberUI.getMember().getMid(),gid,start_time,end_time);
+			tempGrpAct = new Group_exercise_log(0,title,activity_name,memberUI.getMember().getMid(),gid,null,null);
 		}
 		
 		try {

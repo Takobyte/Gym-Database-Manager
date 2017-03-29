@@ -67,12 +67,28 @@ public class MemIndActDialogue extends JDialog {
 		textFieldActivityName.setText(log.getIndividual_activity_name());
 		String str = log.getStart_time().toString();
 		String[] splitStr = str.split("\\s+");
-		dateTimePickerStart.datePicker.setText(splitStr[0]);
-		dateTimePickerStart.timePicker.setText(splitStr[1]);
+		DateFormat odfDate = new SimpleDateFormat("YYYY-MM-dd");
+		DateFormat odfTime = new SimpleDateFormat("HH:mm:ss.SSS");
+		DateFormat ndfDate = new SimpleDateFormat("MMMMM d, yyyy");
+		DateFormat ndfTime = new SimpleDateFormat("h:mma");
+		try {
+			Date oldDate = odfDate.parse(splitStr[0]);
+			dateTimePickerStart.datePicker.setText(ndfDate.format(oldDate));
+			Date oldTime = odfTime.parse(splitStr[1]);
+			dateTimePickerStart.timePicker.setText(ndfTime.format(oldTime));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		String str2 = log.getEnd_time().toString();
 		String[] splitStr2 = str2.split("\\s+");
-		dateTimePickerEnd.datePicker.setText(splitStr2[0]);
-		dateTimePickerEnd.timePicker.setText(splitStr2[1]);
+		try {
+			Date oldDate = odfDate.parse(splitStr2[0]);
+			dateTimePickerEnd.datePicker.setText(ndfDate.format(oldDate));
+			Date oldTime = odfTime.parse(splitStr2[1]);
+			dateTimePickerEnd.timePicker.setText(ndfTime.format(oldTime));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

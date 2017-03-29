@@ -18,6 +18,7 @@ import java.awt.FlowLayout;
 import javax.swing.JTextField;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 
+import core.Employee;
 import core.Member;
 import jdbc.GymDAO;
 
@@ -34,6 +35,7 @@ public class Login extends JFrame {
 	
 	protected GymDAO gymDAO;
 	private int mid;
+	private int eid;
 
 	/**
 	 * Launch the application.
@@ -59,7 +61,6 @@ public class Login extends JFrame {
 		setResizable(false);
 		
 		try {
-//			System.out.println("1");
 			gymDAO = new GymDAO();
 		}
 		catch (Exception exc){
@@ -115,10 +116,27 @@ public class Login extends JFrame {
 		JButton loginBtnSignIn = new JButton("Sign in");
 		loginBtnSignIn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (loginUserComboBox.getSelectedItem().equals("Manager")) {
-					ManagerUI manager = new ManagerUI();
-					manager.managerUI();
-					setVisible(false);
+				if (loginUserComboBox.getSelectedItem().equals("Employee") || loginUserComboBox.getSelectedItem().equals("Manager")) {
+					try {
+						eid = Integer.parseInt(loginUserText.getText());
+						System.out.println(eid);
+						Employee employee = new Employee();
+						employee = gymDAO.fetchEmployee(employee,eid);
+						ManagerUI managerUI = new ManagerUI(gymDAO, employee);
+						managerUI.setVisible(true);
+						setVisible(false);
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(Login.this,
+								"Username does not exist.",
+								"Error",
+								JOptionPane.INFORMATION_MESSAGE);
+					}
+//					JOptionPane.showMessageDialog(Login.this,
+//							"Not available at the moment.",
+//							"Error",
+//							JOptionPane.INFORMATION_MESSAGE);
+//					EmployeeUI employee = new EmployeeUI();
+//					employee.setVisible(true);
 				}
 				else if (loginUserComboBox.getSelectedItem().equals("Member")) {
 //					JOptionPane.showMessageDialog(Login.this,
@@ -139,14 +157,6 @@ public class Login extends JFrame {
 								JOptionPane.INFORMATION_MESSAGE);
 					}
 					
-				}
-				else if (loginUserComboBox.getSelectedItem().equals("Employee")) {
-					JOptionPane.showMessageDialog(Login.this,
-							"Not available at the moment.",
-							"Error",
-							JOptionPane.INFORMATION_MESSAGE);
-//					EmployeeUI employee = new EmployeeUI();
-//					employee.setVisible(true);
 				}
 			}
 		});

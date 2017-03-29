@@ -1,20 +1,21 @@
 package core;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 
 public class Group_exercise_log {
 	int log_no;
 	String title;
 	int mid;
+	String activity_name;
 	int gid;
 	Timestamp start_time;
 	Timestamp end_time;
 
-	public Group_exercise_log(int log_no, String title, int mid, int gid, Timestamp start_time, Timestamp end_time) {
+	public Group_exercise_log(int log_no, String title, String activity_name, int mid, int gid, Timestamp start_time, Timestamp end_time) {
 		this.log_no = log_no;
 		this.title = title;
 		this.mid = mid;
+		this.activity_name = activity_name;
 		this.gid = gid;
 		this.start_time = start_time;
 		this.end_time = end_time;
@@ -56,5 +57,14 @@ public class Group_exercise_log {
 	public void setEnd_time(Timestamp end_time) {
 		this.end_time = end_time;
 	}
+
+	public String getActivity_name() {
+		return activity_name;
+	}
+
+	public void setActivity_name(String activity_name) {
+		this.activity_name = activity_name;
+	}
+	
 
 }

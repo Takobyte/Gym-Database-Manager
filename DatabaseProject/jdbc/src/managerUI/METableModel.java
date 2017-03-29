@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import core.Class_purchase;
+import core.Purchase;
 import core.Employee;
 
 //Manager: Employee JTable Model

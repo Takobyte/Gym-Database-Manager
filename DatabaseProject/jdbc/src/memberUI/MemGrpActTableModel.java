@@ -9,7 +9,7 @@ import core.Group_exercise_log;
 public class MemGrpActTableModel extends AbstractTableModel {
 	
 	public static final int OBJECT_COL = -1;
-	private String[] columnNames = {"log_no","title", "gid", "start_time", "end_time"};
+	private String[] columnNames = {"log_no","title","activity_name", "gid", "start_time", "end_time"};
 	private List<Group_exercise_log> activityLog;
 	
 	public MemGrpActTableModel(List<Group_exercise_log> activityLog) {
@@ -51,10 +51,12 @@ public class MemGrpActTableModel extends AbstractTableModel {
 		case 1:
 			return tempActivity.getTitle();
 		case 2:
-			return tempActivity.getGid();
+			return tempActivity.getActivity_name();
 		case 3:
-			return tempActivity.getStart_time();
+			return tempActivity.getGid();
 		case 4:
+			return tempActivity.getStart_time();
+		case 5:
 			return tempActivity.getEnd_time();
 		case OBJECT_COL:
 			return tempActivity;

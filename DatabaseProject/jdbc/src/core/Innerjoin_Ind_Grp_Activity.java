@@ -1,7 +1,6 @@
 package core;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 public class Innerjoin_Ind_Grp_Activity {
 	

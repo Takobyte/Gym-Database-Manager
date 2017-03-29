@@ -1,7 +1,5 @@
 package UI;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
@@ -30,6 +28,7 @@ import core.Member;
 import core.Room;
 import core.Equipment;
 import core.Supplier;
+import jdbc.GymDAO;
 import managerUI.Innerjoin;
 import managerUI.MEDialogue;
 import managerUI.METableModel;
@@ -51,36 +50,50 @@ import javax.swing.SpringLayout;
 import javax.swing.JToolBar;
 import javax.swing.JSeparator;
 
-public class ManagerUI extends Login{
+public class ManagerUI extends JFrame{
 
-	private JFrame managerWindow;
 	private JTextField txtbNameMng;
 	private JTable tableManager;
 	private JComboBox comboBoxMng;
-	private JLabel lblQueue;
+	private JLabel lblInfo;
 	private LinkedList<String> joinQueue;
 	private Boolean isJoinSelected = false;
+	
+	private int eid = 1;
+	private Boolean isEditable = false;
+	private Boolean isManager = false;
+	private Employee employee;
+	private GymDAO gymDAO;
 	
 	/**
 	 * Launch the application.
 	 */
-	public static void managerUI() {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ManagerUI window = new ManagerUI();
-					window.managerWindow.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void managerUI(Employee theEmployee) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					ManagerUI window = new ManagerUI();
+//					employee = theEmployee;
+//					window.managerWindow.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the application.
 	 */
-	public ManagerUI() {
+//	public ManagerUI() {
+//		initialize();
+//	}
+	
+	public ManagerUI(GymDAO gymDAO, Employee employee) {
+		this.gymDAO = gymDAO;
+		this.employee = employee;
+		eid = employee.getEmp_id();
+		isManager = employee.getManager_flag();
 		initialize();
 	}
 
@@ -88,21 +101,20 @@ public class ManagerUI extends Login{
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		joinQueue = new LinkedList<>();
-		managerWindow = new JFrame();
-		managerWindow.setTitle("Manager");
-		managerWindow.setBounds(100, 100, 579, 355);
-		managerWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		managerWindow.getContentPane().setLayout(new BorderLayout(0, 0));
+		setTitle("Manager");
+		setBounds(100, 100, 579, 338);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		getContentPane().setLayout(new BorderLayout(0, 0));
 		
 		JPanel panelBtmMember = new JPanel();
-		managerWindow.getContentPane().add(panelBtmMember, BorderLayout.SOUTH);
+		getContentPane().add(panelBtmMember, BorderLayout.SOUTH);
 		
 		JButton btnBack = new JButton("Back");
 		btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				managerWindow.dispose();
-				loginVisibility();
+				dispose();
+				Login loginUI = new Login();
+				loginUI.setVisible(true);
 			}
 		});
 		panelBtmMember.add(btnBack);
@@ -112,13 +124,13 @@ public class ManagerUI extends Login{
 			public void actionPerformed(ActionEvent arg0) {
 				// close dialog
 				setVisible(false);
-				managerWindow.dispose();
+				dispose();
 				Container tempFrame = btnExit.getParent();
 				do {
 					tempFrame = tempFrame.getParent();
 				} while (!(tempFrame instanceof JFrame)); {
 					((JFrame) tempFrame).dispose();
-					exit();
+					System.exit(1);
 				}
 				
 			}
@@ -128,7 +140,7 @@ public class ManagerUI extends Login{
 		JPanel panelTopMember = new JPanel();
 		FlowLayout fl_panelTopMember = (FlowLayout) panelTopMember.getLayout();
 		fl_panelTopMember.setAlignment(FlowLayout.LEFT);
-		managerWindow.getContentPane().add(panelTopMember, BorderLayout.NORTH);
+		getContentPane().add(panelTopMember, BorderLayout.NORTH);
 		
 		JLabel lblFilter = new JLabel("Filter:");
 		panelTopMember.add(lblFilter);
@@ -140,7 +152,6 @@ public class ManagerUI extends Login{
 		JButton btnSearchMng = new JButton("Search");
 		btnSearchMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				lblQueue.setText("");
 				// Get last name from text field
 				try {
 					if (comboBoxMng.getSelectedItem() == "Member List") {
@@ -249,16 +260,24 @@ public class ManagerUI extends Login{
 		panelTopMember.add(btnSearchMng);
 		
 		comboBoxMng = new JComboBox();
-		comboBoxMng.setModel(new DefaultComboBoxModel(new String[] {"Employee List", "Member List", "Gym List", "Room List", "Equipment List", "Supplier List"}));
+		String[] employeeComboBox = new String[] {"Member List", "Gym List", "Room List", "Equipment List"};
+		String[] managerComboBox = new String[] {"Employee List", "Member List", "Gym List", "Room List", "Equipment List", "Supplier List"};
+		if (!isManager) {
+			comboBoxMng.setModel(new DefaultComboBoxModel(employeeComboBox));
+		} else {
+			comboBoxMng.setModel(new DefaultComboBoxModel(managerComboBox));
+		}
 		panelTopMember.add(comboBoxMng);
 		
-		lblQueue = new JLabel("");
-		panelTopMember.add(lblQueue);
-		lblQueue.setHorizontalAlignment(SwingConstants.LEFT);
+		lblInfo = new JLabel("");
+		panelTopMember.add(lblInfo);
+		String loginText = "User: " + employee.getName();
+		lblInfo.setText(loginText);
+		lblInfo.setHorizontalAlignment(SwingConstants.LEFT);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setEnabled(false);
-		managerWindow.getContentPane().add(scrollPane, BorderLayout.CENTER);
+		getContentPane().add(scrollPane, BorderLayout.CENTER);
 		
 		tableManager = new JTable();
 		tableManager.setToolTipText("");
@@ -266,11 +285,14 @@ public class ManagerUI extends Login{
 		
 		JToolBar toolBarMng = new JToolBar();
 		toolBarMng.setOrientation(SwingConstants.VERTICAL);
-		managerWindow.getContentPane().add(toolBarMng, BorderLayout.WEST);
+		getContentPane().add(toolBarMng, BorderLayout.WEST);
 		
 		JButton btnInsertMng = new JButton("Insert");
 		btnInsertMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (!isManager) {
+					return;
+				}
 				if (comboBoxMng.getSelectedItem().equals("Member List")) {
 					// create dialog
 					MMDialogue dialog = new MMDialogue(ManagerUI.this, gymDAO, null, false);
@@ -309,6 +331,9 @@ public class ManagerUI extends Login{
 		JButton btnDeleteMng = new JButton("Delete");
 		btnDeleteMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (!isManager) {
+					return;
+				}
 				if (comboBoxMng.getSelectedItem().equals("Member List")) {
 					try {
 						// get the selected row
@@ -482,6 +507,9 @@ public class ManagerUI extends Login{
 		JButton btnEditMng = new JButton("Edit");
 		btnEditMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if (!isManager) {
+					return;
+				}
 				if (comboBoxMng.getSelectedItem().equals("Member List")) {
 					// get the selected item
 					int row = tableManager.getSelectedRow();
@@ -801,7 +829,6 @@ public class ManagerUI extends Login{
 					tempInnerJoin = gymDAO.joinTable();
 					Innerjoin model = new Innerjoin(tempInnerJoin);
 					tableManager.setModel(model);
-					lblQueue.setText("Join only works on Member and Gym at the moment");
 				} catch (Exception exc) {
 					JOptionPane.showMessageDialog(ManagerUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
 				}

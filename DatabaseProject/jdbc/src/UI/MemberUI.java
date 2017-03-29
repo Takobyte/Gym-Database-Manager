@@ -20,13 +20,17 @@ import core.Group_exercise_log;
 import core.Individual_exercise_log;
 import core.Innerjoin_Ind_Grp_Activity;
 import core.Member;
+import core.Purchase;
 import core.Supplier;
 import jdbc.GymDAO;
+import managerUI.MMDialogue;
+import managerUI.MMTableModel;
 import memberUI.MemActivityTableModel;
 import memberUI.MemGrpActDialogue;
 import memberUI.MemGrpActTableModel;
 import memberUI.MemIndActDialogue;
 import memberUI.MemIndActTableModel;
+import memberUI.MemPurchaseTableModel;
 import memberUI.PurchaseUI;
 import memberUI.TimestampCellRenderer;
 
@@ -49,6 +53,8 @@ public class MemberUI extends JFrame {
 	private GymDAO gymDAO;
 	private Member member;
 	private int mid = 1;
+	private Boolean isEditable = false;
+	private JLabel lblPrmstd;
 	
 	public MemberUI(GymDAO gymDAO, Member member) {
 		this.gymDAO = gymDAO;
@@ -92,23 +98,13 @@ public class MemberUI extends JFrame {
 		lblName.setToolTipText("");
 		panel.add(lblName, "1, 2, left, center");
 		
-		String date;
-		DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-		try {
-			date = "Premium: " + df.format(member.getPrmExpDate().getTime());
-		} catch (NullPointerException e1) {
-			try {
-				date = "Standard: " + df.format(member.getStdExpDate().getTime());
-			} catch (NullPointerException e2) {
-				date = "None";
-			}
-		}
-		JLabel lblPrmstd = new JLabel(date);
+		String date = refreshLbl();
+		lblPrmstd = new JLabel(date);
 		panel.add(lblPrmstd, "3, 2, left, default");
 		
 		JComboBox comboBoxMember = new JComboBox();
 		panel.add(comboBoxMember, "8, 2");
-		comboBoxMember.setModel(new DefaultComboBoxModel(new String[] {"Individual", "Group"}));
+		comboBoxMember.setModel(new DefaultComboBoxModel(new String[] {"Individual", "Group", "Purchase Log"}));
 		
 		JScrollPane scrollPane = new JScrollPane();
 		contentPane.add(scrollPane, BorderLayout.CENTER);
@@ -121,6 +117,8 @@ public class MemberUI extends JFrame {
 			
 			MemActivityTableModel model = new MemActivityTableModel(tempActivity);
 			tableMember.setModel(model);
+			tableMember.getColumnModel().getColumn(1).setCellRenderer(new TimestampCellRenderer());
+			tableMember.getColumnModel().getColumn(2).setCellRenderer(new TimestampCellRenderer());
 		} catch (Exception exc) {
 			JOptionPane.showMessageDialog(MemberUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
 		}
@@ -151,13 +149,19 @@ public class MemberUI extends JFrame {
 						tableMember.getColumnModel().getColumn(3).setCellRenderer(new TimestampCellRenderer());
 						tableMember.getColumnModel().getColumn(4).setCellRenderer(new TimestampCellRenderer());
 					}
-					else {
+					else if (comboBoxMember.getSelectedItem().equals("Group")){
 						List<Group_exercise_log> logs = gymDAO.getAllGrpAct(mid);
 						MemGrpActTableModel model = new MemGrpActTableModel(logs);
 						tableMember.setModel(model);
 						tableMember.getColumnModel().getColumn(3).setCellRenderer(new TimestampCellRenderer());
 						tableMember.getColumnModel().getColumn(4).setCellRenderer(new TimestampCellRenderer());
 					}
+					else if (comboBoxMember.getSelectedItem().equals("Purchase Log")) {
+						List<Purchase> logs = gymDAO.getAllPurchase(mid);
+						MemPurchaseTableModel model = new MemPurchaseTableModel(logs);
+						tableMember.setModel(model);
+					}
+					isEditable = true;
 				}
 				catch (Exception exc) {
 					JOptionPane.showMessageDialog(MemberUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
@@ -170,7 +174,7 @@ public class MemberUI extends JFrame {
 		panel_1.add(btnPurchase);
 		btnPurchase.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				PurchaseUI purchase = new PurchaseUI();
+				PurchaseUI purchase = new PurchaseUI(MemberUI.this, gymDAO, member);
 				purchase.setVisible(true);
 			}
 		});
@@ -221,10 +225,149 @@ public class MemberUI extends JFrame {
 		toolBar.add(btnInsert);
 		
 		JButton btnDelete = new JButton("Delete");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (!isEditable) {
+					return;
+				}
+				if (comboBoxMember.getSelectedItem().equals("Individual")) {
+					try {
+						// get the selected row
+						int row = tableMember.getSelectedRow();
+
+						// make sure a row is selected
+						if (row < 0) {
+							JOptionPane.showMessageDialog(MemberUI.this, 
+									"You must select a log", "Error", JOptionPane.ERROR_MESSAGE);				
+							return;
+						}
+
+						// prompt the user
+						int response = JOptionPane.showConfirmDialog(
+								MemberUI.this, "Delete this log?", "Confirm", 
+								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+						if (response != JOptionPane.YES_OPTION) {
+							return;
+						}
+
+						// get the current log
+						Individual_exercise_log tempLog = (Individual_exercise_log) tableMember.getValueAt(row, MemIndActTableModel.OBJECT_COL);
+
+						// delete the log
+						gymDAO.delete(tempLog.getLog_no(), "Individual");
+
+						// refresh GUI
+						refreshIndActView();
+
+						// show success message
+						JOptionPane.showMessageDialog(MemberUI.this,
+								"Log deleted succesfully.", "Log Deleted",
+								JOptionPane.INFORMATION_MESSAGE);
+
+					} catch (Exception exc) {
+						JOptionPane.showMessageDialog(MemberUI.this,
+								"Error deleting log: " + exc.getMessage(), "Error",
+								JOptionPane.ERROR_MESSAGE);
+					}
+
+				}
+				else if (comboBoxMember.getSelectedItem().equals("Group")) {
+					try {
+						// get the selected row
+						int row = tableMember.getSelectedRow();
+
+						// make sure a row is selected
+						if (row < 0) {
+							JOptionPane.showMessageDialog(MemberUI.this, 
+									"You must select a log", "Error", JOptionPane.ERROR_MESSAGE);				
+							return;
+						}
+
+						// prompt the user
+						int response = JOptionPane.showConfirmDialog(
+								MemberUI.this, "Delete this log?", "Confirm", 
+								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+						if (response != JOptionPane.YES_OPTION) {
+							return;
+						}
+
+						// get the current log
+						Group_exercise_log tempLog = (Group_exercise_log) tableMember.getValueAt(row, MemGrpActTableModel.OBJECT_COL);
+
+						// delete the log
+						gymDAO.delete(tempLog.getLog_no(), "Group");
+
+						// refresh GUI
+						refreshGrpActView();
+
+						// show success message
+						JOptionPane.showMessageDialog(MemberUI.this,
+								"Log deleted succesfully.", "Log Deleted",
+								JOptionPane.INFORMATION_MESSAGE);
+
+					} catch (Exception exc) {
+						JOptionPane.showMessageDialog(MemberUI.this,
+								"Error deleting log: " + exc.getMessage(), "Error",
+								JOptionPane.ERROR_MESSAGE);
+					}
+
+				}
+			}
+		});
 		btnDelete.setBorderPainted(false);
 		toolBar.add(btnDelete);
 		
 		JButton btnEdit = new JButton("Edit");
+		btnEdit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (isEditable) {
+					if (comboBoxMember.getSelectedItem().equals("Individual")) {
+						// get the selected item
+						int row = tableMember.getSelectedRow();
+						
+						// make sure a row is selected
+						if (row < 0) {
+							JOptionPane.showMessageDialog(MemberUI.this, "You must select an activity", "Error",
+									JOptionPane.ERROR_MESSAGE);				
+							return;
+						}
+						
+						// get the current member
+						Individual_exercise_log tempLog = (Individual_exercise_log) tableMember.getValueAt(row, MemIndActTableModel.OBJECT_COL);
+						
+						// create dialog
+						MemIndActDialogue dialog = new MemIndActDialogue(MemberUI.this, gymDAO, 
+																	tempLog, true);
+	
+						// show dialog
+						dialog.setVisible(true);
+					}
+					else if (comboBoxMember.getSelectedItem().equals("Group")) {
+						// get the selected item
+						int row = tableMember.getSelectedRow();
+						
+						// make sure a row is selected
+						if (row < 0) {
+							JOptionPane.showMessageDialog(MemberUI.this, "You must select an activity", "Error",
+									JOptionPane.ERROR_MESSAGE);				
+							return;
+						}
+						
+						// get the current member
+						Group_exercise_log tempLog = (Group_exercise_log) tableMember.getValueAt(row, MemGrpActTableModel.OBJECT_COL);
+						
+						// create dialog
+						MemGrpActDialogue dialog = new MemGrpActDialogue(MemberUI.this, gymDAO, 
+																	tempLog, true);
+	
+						// show dialog
+						dialog.setVisible(true);
+					}
+				}
+			}
+		});
 		btnEdit.setBorderPainted(false);
 		toolBar.add(btnEdit);
 		
@@ -238,6 +381,10 @@ public class MemberUI extends JFrame {
 					
 					MemActivityTableModel model = new MemActivityTableModel(tempActivity);
 					tableMember.setModel(model);
+					tableMember.getColumnModel().getColumn(1).setCellRenderer(new TimestampCellRenderer());
+					tableMember.getColumnModel().getColumn(2).setCellRenderer(new TimestampCellRenderer());
+					isEditable = false;
+					
 				} catch (Exception exc) {
 					JOptionPane.showMessageDialog(MemberUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
 				}
@@ -270,12 +417,27 @@ public class MemberUI extends JFrame {
 			MemGrpActTableModel model = new MemGrpActTableModel(grpActivity);
 
 			tableMember.setModel(model);
-			tableMember.getColumnModel().getColumn(3).setCellRenderer(new TimestampCellRenderer());
 			tableMember.getColumnModel().getColumn(4).setCellRenderer(new TimestampCellRenderer());
+			tableMember.getColumnModel().getColumn(5).setCellRenderer(new TimestampCellRenderer());
 		} catch (Exception exc) {
 			JOptionPane.showMessageDialog(this, "Error: " + exc, "Error",
 					JOptionPane.ERROR_MESSAGE);
 		}		
+	}
+	
+	public String refreshLbl() {
+		String date;
+		DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+		try {
+			date = "Premium: " + df.format(member.getPrmExpDate().getTime());
+		} catch (NullPointerException e1) {
+			try {
+				date = "Standard: " + df.format(member.getStdExpDate().getTime());
+			} catch (NullPointerException e2) {
+				date = "None";
+			}
+		}
+		return date;
 	}
 
 	public Member getMember() {
@@ -285,5 +447,24 @@ public class MemberUI extends JFrame {
 	public void setMember(Member member) {
 		this.member = member;
 	}
+
+	public JLabel getLblPrmstd() {
+		return lblPrmstd;
+	}
+
+	public void setLblPrmstd(JLabel lblPrmstd) {
+		this.lblPrmstd = lblPrmstd;
+	}
+	
+	public Boolean isPremium() {
+		if (member.getPrmExpDate() == null) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	
+	
 
 }

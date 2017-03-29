@@ -23,6 +23,18 @@ public class Employee {
 		this.manager_flag = manager_flag;
 		this.instructor_flag = instructor_flag;
 	}
+	
+	public Employee() {
+		this.emp_id = 0;
+		this.name = "";
+		this.job_title = "";
+		this.salary = 0;
+		this.address = "";
+		this.dob = null;
+		this.telephone = "";
+		this.manager_flag = false;
+		this.instructor_flag = false;
+	}
 
 	public int getEmp_id() {
 		return emp_id;
