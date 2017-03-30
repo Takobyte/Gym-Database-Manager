@@ -1,0 +1,243 @@
+package managerUI;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+
+import UI.ManagerUI;
+import core.Member;
+import core.Room;
+import jdbc.GymDAO;
+
+import com.jgoodies.forms.layout.FormSpecs;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.JRadioButton;
+import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.awt.event.ActionEvent;
+
+public class MRDialogue extends JDialog {
+
+	private final JPanel contentPanel = new JPanel();
+	private JTextField textFieldDName;
+	private JTextField textFieldCapacity;
+	private JTextField textFieldBranch;
+	private JRadioButton rdbtnActivity;
+	private JRadioButton rdbtnMainEq;
+	
+	private ManagerUI managerUI;
+	private GymDAO gymDAO;
+	
+	private Room previousRoom = null;
+	private boolean updateMode = false;
+
+	/**
+	 * Launch the application.
+	 */
+	public MRDialogue(ManagerUI theManagerUI, GymDAO theGymDAO, Room previousRoom, boolean updateMode) {
+		this();
+		managerUI = theManagerUI;
+		gymDAO = theGymDAO;
+		this.previousRoom = previousRoom;
+		this.updateMode = updateMode;
+		if (updateMode) {
+			setTitle("Update Member");
+			populateGui(previousRoom);
+		}
+	}
+	
+	private void populateGui(Room room) {
+		textFieldDName.setText(room.getDescriptive_name());;
+		textFieldCapacity.setText(String.valueOf(room.getCapacity()));
+		textFieldBranch.setText(String.valueOf(room.getBranch_id()));
+		if (room.getActivity_room_flag()) {
+			rdbtnActivity.setSelected(true);
+		}
+		if (room.getMain_equipment_room_flag()) {
+			rdbtnMainEq.setSelected(true);
+		}
+	}
+
+	/**
+	 * Create the dialog.
+	 */
+	public MRDialogue() {
+		setTitle("Add Room");
+		setBounds(100, 100, 450, 460);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(new FormLayout(new ColumnSpec[] {
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(52dlu;default):grow"),},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,}));
+		{
+			JLabel lblDescriptiveName = new JLabel("Descriptive Name:");
+			contentPanel.add(lblDescriptiveName, "2, 2, right, default");
+		}
+		{
+			textFieldDName = new JTextField();
+			contentPanel.add(textFieldDName, "4, 2, fill, default");
+			textFieldDName.setColumns(10);
+		}
+		{
+			JLabel lblCapacity = new JLabel("Capacity:");
+			contentPanel.add(lblCapacity, "2, 4, right, default");
+		}
+		{
+			textFieldCapacity = new JTextField();
+			textFieldCapacity.setText("");
+			contentPanel.add(textFieldCapacity, "4, 4, fill, default");
+			textFieldCapacity.setColumns(10);
+		}
+		{
+			JLabel lblBranchId = new JLabel("Branch ID:");
+			contentPanel.add(lblBranchId, "2, 6, right, default");
+		}
+		{
+			textFieldBranch = new JTextField();
+			textFieldBranch.setText("");
+			contentPanel.add(textFieldBranch, "4, 6, fill, default");
+			textFieldBranch.setColumns(10);
+		}
+		{
+			JLabel lblType = new JLabel("Type:");
+			contentPanel.add(lblType, "2, 8, right, default");
+		}
+		{
+			rdbtnActivity = new JRadioButton("Activity");
+			contentPanel.add(rdbtnActivity, "4, 8");
+		}
+		{
+			rdbtnMainEq = new JRadioButton("Main Equipment");
+			contentPanel.add(rdbtnMainEq, "4, 10");
+		}
+		ButtonGroup group = new ButtonGroup();
+		group.add(rdbtnActivity);
+		group.add(rdbtnMainEq);
+		{
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			{
+				JButton okButton = new JButton("OK");
+				okButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						try {
+							saveRoom();
+						} catch (ParseException e1) {
+							e1.printStackTrace();
+						}
+					}
+				});
+				okButton.setActionCommand("OK");
+				buttonPane.add(okButton);
+				getRootPane().setDefaultButton(okButton);
+			}
+			{
+				JButton cancelButton = new JButton("Cancel");
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						// close dialog
+						setVisible(false);
+						dispose();
+					}
+				});
+				cancelButton.setActionCommand("Cancel");
+				buttonPane.add(cancelButton);
+			}
+		}
+	}
+	
+	protected void saveRoom() throws ParseException {
+		
+		// get the room info from gui
+		String descriptive_name = textFieldDName.getText();
+		int capacity = 0;
+		int branch_id = 0;
+		String tempCapacity = textFieldCapacity.getText();
+		String tempBranchId = textFieldBranch.getText();
+		if (!tempCapacity.isEmpty()) {
+			try {
+				capacity = Integer.parseInt(textFieldCapacity.getText());
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(
+						MRDialogue.this,
+						"Capacity must be a number", "Error",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+		int branch_id = Integer.parseInt(textFieldBranch.getText());
+		Boolean activity_room_flag = rdbtnActivity.isSelected();
+		Boolean main_equipment_room_flag = rdbtnMainEq.isSelected();
+		
+		Room tempRoom = null;
+		
+		if (updateMode) {
+			tempRoom = previousRoom;
+			tempRoom.setDescriptive_name(descriptive_name);
+			tempRoom.setCapacity(capacity);
+			tempRoom.setBranch_id(branch_id);
+			tempRoom.setActivity_room_flag(activity_room_flag);
+			tempRoom.setMain_equipment_room_flag(main_equipment_room_flag);
+			
+		}
+		else {
+			tempRoom = new Room(0, descriptive_name, capacity, branch_id, activity_room_flag, main_equipment_room_flag);
+		}
+		
+		try {
+			// save to the database
+			if (updateMode) {
+				gymDAO.updateRoom(tempRoom);
+			}
+			else {
+				gymDAO.addRoom(tempRoom);
+			}
+
+			// close dialog
+			setVisible(false);
+			dispose();
+
+			// refresh gui list
+			managerUI.refreshRoomView();
+			
+			// show success message
+			JOptionPane.showMessageDialog(managerUI,
+					"Room added succesfully.",
+					"Room Added",
+					JOptionPane.INFORMATION_MESSAGE);
+		} catch (Exception exc) {
+			JOptionPane.showMessageDialog(
+					managerUI,
+					"Error saving room: "
+							+ exc.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		
+	}
+
+}

@@ -1,0 +1,214 @@
+package memberUI;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import UI.MemberUI;
+import core.Group_exercise_log;
+import jdbc.GymDAO;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.layout.FormSpecs;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import com.github.lgooddatepicker.components.TimePicker;
+import javax.swing.JTextField;
+import java.awt.event.ActionListener;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.awt.event.ActionEvent;
+import com.github.lgooddatepicker.components.DateTimePicker;
+
+public class MemGrpActDialogue extends JDialog {
+
+	private final JPanel contentPanel = new JPanel();
+	
+	private MemberUI memberUI;
+	private GymDAO gymDAO;
+	
+	private Group_exercise_log previousLog;
+	private boolean updateMode = false;
+	private JTextField textFieldTitle;
+	private JTextField textFieldGid;
+
+	/**
+	 * Launch the application.
+	 */
+	public MemGrpActDialogue(MemberUI theMemberUI, GymDAO theGymDAO, Group_exercise_log previousLog, Boolean updateMode) {
+		this();
+		memberUI = theMemberUI;
+		gymDAO = theGymDAO;
+		this.previousLog = previousLog;
+		this.updateMode = updateMode;
+		if (updateMode) {
+			setTitle("Add individual activity");
+			populateGui(previousLog);
+		}
+	}
+	
+	private void populateGui(Group_exercise_log previousLog) {
+		textFieldTitle.setText(previousLog.getTitle());
+		textFieldGid.setText(String.valueOf(previousLog.getGid()));
+		String str = previousLog.getStart_time().toString();
+//		dateTimePickerStart.getTimePicker().setText(previousLog.);
+//		dateTimePickerEnd.setText(previousLog.getEnd_time().toString());
+	}
+
+	/**
+	 * Create the dialog.
+	 */
+	public MemGrpActDialogue() {
+		setTitle("Add Group Activity");
+		setBounds(100, 100, 450, 149);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(new FormLayout(new ColumnSpec[] {
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("default:grow"),},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("default:grow"),
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("default:grow"),}));
+		{
+			JLabel lblTitle = new JLabel("Title:");
+			contentPanel.add(lblTitle, "2, 2, right, default");
+		}
+		{
+			textFieldTitle = new JTextField();
+			contentPanel.add(textFieldTitle, "4, 2, fill, default");
+			textFieldTitle.setColumns(10);
+		}
+		{
+			JLabel lblGroupId = new JLabel("Class ID:");
+			contentPanel.add(lblGroupId, "2, 4, right, default");
+		}
+		{
+			textFieldGid = new JTextField();
+			contentPanel.add(textFieldGid, "4, 4, fill, default");
+			textFieldGid.setColumns(10);
+		}
+		{
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			{
+				JButton okButton = new JButton("OK");
+				okButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						try {
+							saveGrpAct();
+						} catch (ParseException e1) {
+							e1.printStackTrace();
+						}
+					}
+				});
+				okButton.setActionCommand("OK");
+				buttonPane.add(okButton);
+				getRootPane().setDefaultButton(okButton);
+			}
+			{
+				JButton cancelButton = new JButton("Cancel");
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						setVisible(false);
+						dispose();
+					}
+				});
+				cancelButton.setActionCommand("Cancel");
+				buttonPane.add(cancelButton);
+			}
+		}
+	}
+	
+	protected void saveGrpAct() throws ParseException {
+		
+		// get the employee info from gui
+		String title = textFieldTitle.getText();
+		String activity_name = textFieldTitle.getText();
+		int gid = Integer.parseInt(textFieldGid.getText());
+//		Timestamp start_time;
+//		Timestamp end_time;
+//		try {
+//			String date = dateTimePickerStart.datePicker.getText() + " " + dateTimePickerStart.timePicker.getText();
+//			DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
+//			Date parsedDate = df.parse(date);
+//			Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
+//			start_time = ts;
+//		} catch (Exception e){
+//			start_time = null;
+//		}
+//		try {
+//			String date = dateTimePickerEnd.datePicker.getText() + " " + dateTimePickerEnd.timePicker.getText();
+//			DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
+//			Date parsedDate = df.parse(date);
+//			Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
+//			end_time = ts;
+//		} catch (Exception e) {
+//			end_time = null;
+//		}
+
+		Group_exercise_log tempGrpAct = null;
+		
+		if (updateMode) {
+			tempGrpAct = previousLog;
+			tempGrpAct.setTitle(title);
+//			tempGrpAct.setStart_time(start_time);
+//			tempGrpAct.setEnd_time(end_time);
+			tempGrpAct.setActivity_name(activity_name);
+			
+		}
+		else {
+			tempGrpAct = new Group_exercise_log(0,title,activity_name,memberUI.getMember().getMid(),gid,null,null);
+		}
+		
+		try {
+			// save to the database
+			if (updateMode) {
+				gymDAO.updateGrpAct(tempGrpAct);
+			}
+			else {
+				gymDAO.addGrpAct(tempGrpAct);
+			}
+
+			// close dialog
+			setVisible(false);
+			dispose();
+
+			// refresh gui list
+			memberUI.refreshGrpActView();
+			
+			// show success message
+			JOptionPane.showMessageDialog(memberUI,
+					"Log added succesfully.",
+					"Log Added",
+					JOptionPane.INFORMATION_MESSAGE);
+		} catch (Exception exc) {
+			JOptionPane.showMessageDialog(
+					memberUI,
+					"Error saving log: "
+							+ exc.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		
+	}
+
+}

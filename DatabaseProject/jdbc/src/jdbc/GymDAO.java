@@ -27,7 +27,7 @@ public class GymDAO {
 		// Get a connection to database
 		String databaseName = "gym";
 		String accountName = "root";
-		String password = "pass";
+		String password = "password";
 		
 		myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/"
 				+ databaseName ,
@@ -55,7 +55,7 @@ public class GymDAO {
 				myStmt = myConn.prepareStatement("delete from room where rid=?");
 				break;
 			case "Equipment":
-				myStmt = myConn.prepareStatement("delete from equipment where eid=?");
+				myStmt = myConn.prepareStatement("delete from equipment where equip_id=?");
 				break;
 			case "Supplier":
 				myStmt = myConn.prepareStatement("delete from suppliers where sid=?");
@@ -408,6 +408,35 @@ public class GymDAO {
 		}
 	}
 	
+	public List<Member> getAllMembersInAllClasses() throws Exception {
+		List<Member> list = new ArrayList<>();
+		
+		Statement myStmt = null;
+		ResultSet myRs = null;
+		
+		try {
+			myStmt = myConn.createStatement();
+			myRs = myStmt.executeQuery("Select * "
+					+ 				   "from members M "
+					+           	   "where NOT EXISTS (Select * "
+					+ 									 "from individual_activity_type I1 "
+					+ 									 "where NOT EXISTS (select * "
+					+ 													   "from individual_exercise_logs I2 "
+					+ 													   "where I1.individual_activity_name = I2.individual_activity_name "
+					+ 													   "AND M.mid = I2.mid))");
+			
+			while (myRs.next()) {
+				Member tempMember = convertRowToMember(myRs);
+				list.add(tempMember);
+			}
+
+			return list;		
+		}
+		finally {
+			close(myStmt, myRs);
+		}
+	}
+	
 	private Member convertRowToMember(ResultSet myRs) throws SQLException {
 		
 		int mid = myRs.getInt("mid");
@@ -470,7 +499,7 @@ public class GymDAO {
 		try {
 			// prepare statement
 			myStmt = myConn.prepareStatement("update Room"
-					+ " descriptive_name=?, capacity=?, branch_id=?, activity_room_flag=?, main_equipment_room_flag=?"
+					+ " set descriptive_name=?, capacity=?, branch_id=?, activity_room_flag=?, main_equipment_room_flag=?"
 					+ " where rid=?");
 			
 			// set params
@@ -818,19 +847,28 @@ public class GymDAO {
 		try {
 			// prepare statement
 			myStmt = myConn.prepareStatement("update Equipment"
-					+ " set equip_id=?,name=?, model_no=?, price=?, purchase_date=?, last_service_date=?, months_to_next_service=?, rid=?,sid=?"
+					+ " set name=?, model_no=?, price=?, purchase_date=?, last_service_date=?, months_to_next_service=?, rid=?,sid=?"
 					+ " where equip_id=?");
 			
 			// set params
-			myStmt.setInt(1, tempEq.getEquip_id());
-			myStmt.setString(2, tempEq.getName());
-			myStmt.setString(3, tempEq.getModel_no());
-			myStmt.setFloat(4, tempEq.getPrice());
-			myStmt.setDate(5, new java.sql.Date(tempEq.getPurchase_date().getTime()));
-			myStmt.setDate(6, new java.sql.Date(tempEq.getLast_service_date().getTime()));
-			myStmt.setInt(7,tempEq.getMonths_to_next_service());
-			myStmt.setInt(8,tempEq.getRid());
-			myStmt.setInt(9, tempEq.getSid());
+			myStmt.setString(1, tempEq.getName());
+			myStmt.setString(2, tempEq.getModel_no());
+			myStmt.setFloat(3, tempEq.getPrice());
+			try {
+				myStmt.setDate(4, new java.sql.Date(tempEq.getPurchase_date().getTime()));
+			} catch (NullPointerException e) {
+					myStmt.setDate(4, null);
+			}
+			try {
+				myStmt.setDate(5, new java.sql.Date(tempEq.getLast_service_date().getTime()));
+			} catch (NullPointerException e) {
+					myStmt.setDate(5, null);
+			}
+			myStmt.setInt(6,tempEq.getMonths_to_next_service());
+			myStmt.setInt(7,tempEq.getRid());
+			myStmt.setInt(8, tempEq.getSid());
+			myStmt.setInt(9, tempEq.getEquip_id());
+			
 			// execute SQL
 			myStmt.executeUpdate();			
 		}
@@ -845,8 +883,8 @@ public class GymDAO {
 		try {
 			// prepare statement
 			myStmt = myConn.prepareStatement("insert into Equipment"
-					+ " (name,model_no,price, purchase_date, last_service_date)"
-					+ " values (?, ?, ?, ?, ?)");
+					+ " (name,model_no,price, purchase_date, last_service_date, months_to_next_service,rid,sid)"
+					+ " values (?, ?, ?, ?, ?, ?, ?, ?)");
 			 
 			// set parameters
 			myStmt.setString(1, tempEq.getName());
@@ -862,6 +900,10 @@ public class GymDAO {
 			} catch (NullPointerException e) {
 				myStmt.setDate(5, null);
 			}
+			myStmt.setInt(6, tempEq.getMonths_to_next_service());
+			myStmt.setInt(7, tempEq.getRid());
+			myStmt.setInt(8, tempEq.getSid());
+			
 			// execute SQL
 			myStmt.executeUpdate();
 		}
@@ -869,6 +911,35 @@ public class GymDAO {
 			close(myStmt,null);
 		}	
 		
+	}
+	
+	
+	//Nested Aggregation
+	//gets either most or least revenue of classes
+	public Purchase getRevenue(String fn) throws SQLException {
+		Statement myStmt = null;
+		ResultSet myRs = null;
+		Purchase purchase = new Purchase();
+		
+		try {
+			myStmt = myConn.createStatement();
+			myRs = myStmt.executeQuery("select x.gid, x.amt_paid "
+					+ 				   "from (select gid as gid, avg(amt_paid) as amt_paid "
+					+ 						 "from class_purchases "
+					+ 						 "group by gid) as x "
+					+ 				   "order by x.amt_paid " + fn + " " //desc for maximum, asc for minimum 
+					+ 			       "limit 1");
+			
+			while (myRs.next()) {
+				purchase.setAmt_paid(myRs.getDouble("amt_paid"));
+				purchase.setGid(myRs.getInt("gid"));
+			}
+
+			return purchase;		
+		}
+		finally {
+			close(myStmt, myRs);
+		}
 	}
 	
 	public int getSum(String colName, String tabName) throws SQLException {
@@ -1193,7 +1264,7 @@ public class GymDAO {
 			// set params
 			myStmt.setString(1, tempSupp.getName());
 			myStmt.setString(2, tempSupp.getTelephone());
-			myStmt.setString(2, tempSupp.getAddress());
+			myStmt.setString(3, tempSupp.getAddress());
 			myStmt.setInt(4, tempSupp.getSid());
 			
 			// execute SQL

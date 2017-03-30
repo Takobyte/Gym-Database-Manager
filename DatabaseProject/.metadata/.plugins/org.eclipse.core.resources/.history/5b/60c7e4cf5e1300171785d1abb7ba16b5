@@ -1,0 +1,78 @@
+package memberUI;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import UI.MemberUI;
+import core.Individual_exercise_log;
+import jdbc.GymDAO;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.layout.FormSpecs;
+import javax.swing.JLabel;
+
+public class MemIndDialogue extends JDialog {
+
+	private final JPanel contentPanel = new JPanel();
+	
+	private MemberUI memberUI;
+	private GymDAO gymDAO;
+	
+	private Individual_exercise_log previousLog;
+	private boolean updateMode = false;
+
+	/**
+	 * Launch the application.
+	 */
+	public MemIndDialogue(MemberUI theMemberUI, GymDAO theGymDAO, Individual_exercise_log previousLog, boolean updateMode) {
+		this();
+		memberUI = theMemberUI;
+		gymDAO = theGymDAO;
+		this.previousLog = previousLog;
+		this.updateMode = updateMode;
+	}
+
+	/**
+	 * Create the dialog.
+	 */
+	public MemIndDialogue() {
+		setTitle("Add Individual Exercise Log");
+		setBounds(100, 100, 450, 300);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(new FormLayout(new ColumnSpec[] {
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,}));
+		{
+			JLabel lblTitle = new JLabel("Title:");
+			contentPanel.add(lblTitle, "2, 2");
+		}
+		{
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			{
+				JButton okButton = new JButton("OK");
+				okButton.setActionCommand("OK");
+				buttonPane.add(okButton);
+				getRootPane().setDefaultButton(okButton);
+			}
+			{
+				JButton cancelButton = new JButton("Cancel");
+				cancelButton.setActionCommand("Cancel");
+				buttonPane.add(cancelButton);
+			}
+		}
+	}
+
+}

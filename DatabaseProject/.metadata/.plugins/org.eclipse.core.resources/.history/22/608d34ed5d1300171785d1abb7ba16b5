@@ -1,0 +1,221 @@
+package UI;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+
+import core.Individual_exercise_log;
+import jdbc.GymDAO;
+
+import com.jgoodies.forms.layout.FormSpecs;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import java.awt.event.ActionListener;
+import java.sql.Time;
+import java.text.ParseException;
+import java.util.Date;
+import java.awt.event.ActionEvent;
+import com.github.lgooddatepicker.components.TimePicker;
+import javax.swing.SwingConstants;
+
+public class MemIndActDialogue extends JDialog {
+
+	private final JPanel contentPanel = new JPanel();
+	private JTextField textFieldTitle;
+	private JTextField textFieldActivityName;
+	private TimePicker timePickerStart;
+	private TimePicker timePickerEnd;
+	
+	private MemberUI memberUI;
+	private GymDAO gymDAO;
+	
+	private Individual_exercise_log previousIndAct;
+	private boolean updateMode = false;
+	
+
+	/**
+	 * Launch the application.
+	 */
+	public MemIndActDialogue(MemberUI theMemberUI, GymDAO theGymDAO, Individual_exercise_log previousIndAct) {
+		this();
+		memberUI = theMemberUI;
+		gymDAO = theGymDAO;
+		this.previousIndAct = previousIndAct;
+		this.updateMode = updateMode;
+		if (updateMode) {
+			setTitle("Add individual activity");
+			populateGui(previousIndAct);
+		}
+	}
+	
+	private void populateGui(Individual_exercise_log log) {
+		textFieldTitle.setText(log.getTitle());
+		textFieldActivityName.setText(log.getIndividual_activity_name());
+		//TODO: find a way to import time util
+//		setTime(log.getStart_time());
+//		setTime(log.getEnd_time());
+	}
+
+	/**
+	 * Create the dialog.
+	 */
+	public MemIndActDialogue() {
+		setTitle("Add Individual Activity");
+		setBounds(100, 100, 450, 199);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(new FormLayout(new ColumnSpec[] {
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("default:grow"),},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("default:grow"),
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("default:grow"),}));
+		{
+			JLabel lblTitle = new JLabel("Title:");
+			contentPanel.add(lblTitle, "2, 2, right, default");
+		}
+		{
+			textFieldTitle = new JTextField();
+			contentPanel.add(textFieldTitle, "4, 2, fill, default");
+			textFieldTitle.setColumns(10);
+		}
+		{
+			JLabel lblActivityName = new JLabel("Activity Name:");
+			contentPanel.add(lblActivityName, "2, 4, right, default");
+		}
+		{
+			textFieldActivityName = new JTextField();
+			contentPanel.add(textFieldActivityName, "4, 4, fill, default");
+			textFieldActivityName.setColumns(10);
+		}
+		{
+			JLabel lblStartTime = new JLabel("Start time:");
+			lblStartTime.setHorizontalAlignment(SwingConstants.RIGHT);
+			contentPanel.add(lblStartTime, "2, 6");
+		}
+		{
+			timePickerStart = new TimePicker();
+			contentPanel.add(timePickerStart, "4, 6, fill, fill");
+		}
+		{
+			JLabel lblEndTime = new JLabel("End time:");
+			lblEndTime.setHorizontalAlignment(SwingConstants.RIGHT);
+			contentPanel.add(lblEndTime, "2, 8");
+		}
+		{
+			timePickerEnd = new TimePicker();
+			contentPanel.add(timePickerEnd, "4, 8, fill, fill");
+		}
+		{
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			{
+				JButton okButton = new JButton("OK");
+				okButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						try {
+							saveIndAct();
+						} catch (ParseException e1) {
+							e1.printStackTrace();
+						}
+					}
+				});
+				okButton.setActionCommand("OK");
+				buttonPane.add(okButton);
+				getRootPane().setDefaultButton(okButton);
+			}
+			{
+				JButton cancelButton = new JButton("Cancel");
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						setVisible(false);
+						dispose();
+					}
+				});
+				cancelButton.setActionCommand("Cancel");
+				buttonPane.add(cancelButton);
+			}
+		}
+	}
+	
+protected void saveIndAct() throws ParseException {
+		
+		// get the employee info from gui
+		String title = textFieldTitle.getText();
+		String activityName = textFieldActivityName.getText();
+		Time start_time;
+		Time end_time;
+		try {
+			start_time = java.sql.Time.valueOf(timePickerStart.getTime());
+		} catch (Exception e){
+			start_time = null;
+		}
+		try {
+			end_time = java.sql.Time.valueOf(timePickerEnd.getTime());
+		} catch (Exception e) {
+			end_time = null;
+		}
+
+		Individual_exercise_log tempIndAct = null;
+		
+		if (updateMode) {
+			tempIndAct = previousIndAct;
+			tempIndAct.setTitle(title);
+			tempIndAct.setIndividual_activity_name(activityName);
+			tempIndAct.setStart_time(start_time);
+			tempIndAct.setEnd_time(end_time);
+			
+		}
+		else {
+			tempIndAct = new Individual_exercise_log(0,0,title,activityName,start_time,end_time);
+		}
+		
+		try {
+			// save to the database
+			if (updateMode) {
+				gymDAO.updateIndAct(tempIndAct);
+			}
+			else {
+				gymDAO.addIndAct(tempIndAct);
+			}
+
+			// close dialog
+			setVisible(false);
+			dispose();
+
+			// refresh gui list
+			memberUI.refreshIndActView();
+			
+			// show success message
+			JOptionPane.showMessageDialog(memberUI,
+					"Log added succesfully.",
+					"Log Added",
+					JOptionPane.INFORMATION_MESSAGE);
+		} catch (Exception exc) {
+			JOptionPane.showMessageDialog(
+					memberUI,
+					"Error saving log: "
+							+ exc.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		
+	}
+}

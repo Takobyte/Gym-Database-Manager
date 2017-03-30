@@ -1,0 +1,60 @@
+package core;
+import java.sql.Time;
+import java.util.Date;
+
+public class Individual_exercise_log {
+int log_no;
+int mid;
+String title;
+String individual_activity_name ;
+Time start_time;
+Time end_time;
+
+public Individual_exercise_log(int log_no, int mid, String title, String individual_activity_name,
+		Time start_time, Time end_time) {
+	this.log_no = log_no;
+	this.mid = mid;
+	this.title = title;
+	this.individual_activity_name = individual_activity_name;
+	this.start_time = start_time;
+	this.end_time = end_time;
+}
+public int getLog_no() {
+	return log_no;
+}
+public void setLog_no(int log_no) {
+	this.log_no = log_no;
+}
+public int getMid() {
+	return mid;
+}
+public void setMid(int mid) {
+	this.mid = mid;
+}
+public String getTitle() {
+	return title;
+}
+public void setTitle(String title) {
+	this.title = title;
+}
+public String getIndividual_activity_name() {
+	return individual_activity_name;
+}
+public void setIndividual_activity_name(String individual_activity_name) {
+	this.individual_activity_name = individual_activity_name;
+}
+public Time getStart_time() {
+	System.out.print(start_time);
+	return start_time;
+}
+public void setStart_time(Time start_time) {
+	this.start_time = start_time;
+}
+public Time getEnd_time() {
+	return end_time;
+}
+public void setEnd_time(Time end_time) {
+	this.end_time = end_time;
+}
+
+}

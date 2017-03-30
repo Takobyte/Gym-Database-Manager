@@ -3,6 +3,7 @@ package managerUI;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -171,6 +172,10 @@ public class MEDialogue extends JDialog {
 				rdbtnInstructorFlag = new JRadioButton("Instructor Flag");
 				panel.add(rdbtnInstructorFlag);
 			}
+			ButtonGroup group = new ButtonGroup();
+			group.add(rdbtnInstructorFlag);
+			group.add(rdbtnManagerFlag);
+
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -210,7 +215,19 @@ public class MEDialogue extends JDialog {
 	protected void saveEmployee() throws ParseException {
 		String name = textFieldName.getText();
 		String job_title = textFieldJob.getText();
-		int salary = Integer.parseInt(textFieldSalary.getText());
+		int salary = 0;
+		String tempSalary = textFieldSalary.getText();
+		if (!tempSalary.isEmpty()) { 
+			try {
+				salary = Integer.parseInt(tempSalary);
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(
+						MEDialogue.this,
+						"Salary must be a number", "Error",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
 		String address = textFieldAddr.getText();
 		String telephone=textFieldTel.getText();
 		Date dob= dateChooserDob.getDate();

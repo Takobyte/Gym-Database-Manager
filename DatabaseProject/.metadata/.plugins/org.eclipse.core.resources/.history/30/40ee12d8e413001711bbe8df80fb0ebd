@@ -1,0 +1,321 @@
+package UI;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+
+import core.Group_exercise_log;
+import core.Individual_exercise_log;
+import core.Innerjoin_Ind_Grp_Activity;
+import core.Member;
+import core.Supplier;
+import jdbc.GymDAO;
+import managerUI.MMDialogue;
+import managerUI.MMTableModel;
+import memberUI.MemActivityTableModel;
+import memberUI.MemGrpActDialogue;
+import memberUI.MemGrpActTableModel;
+import memberUI.MemIndActDialogue;
+import memberUI.MemIndActTableModel;
+import memberUI.PurchaseUI;
+import memberUI.TimestampCellRenderer;
+
+import com.jgoodies.forms.layout.FormSpecs;
+import javax.swing.JButton;
+import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
+import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.awt.event.ActionEvent;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+
+public class MemberUI extends JFrame {
+
+	private JPanel contentPane;
+	private JTable tableMember;
+	private GymDAO gymDAO;
+	private Member member;
+	private int mid = 1;
+	
+	public MemberUI(GymDAO gymDAO, Member member) {
+		this.gymDAO = gymDAO;
+		this.member = member;
+		mid = member.getMid();
+		initialize();
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	private void initialize() {
+		setTitle("Member");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 656, 307);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
+		
+		JPanel panel = new JPanel();
+		contentPane.add(panel, BorderLayout.NORTH);
+		panel.setLayout(new FormLayout(new ColumnSpec[] {
+				ColumnSpec.decode("146px"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(46dlu;default)"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				ColumnSpec.decode("46px"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("max(41dlu;default)"),
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,},
+			new RowSpec[] {
+				FormSpecs.LINE_GAP_ROWSPEC,
+				RowSpec.decode("23px"),}));
+		String lblUserName = "Name: " + member.getName();
+		JLabel lblName = new JLabel(lblUserName);
+		lblName.setToolTipText("");
+		panel.add(lblName, "1, 2, left, center");
+		
+		String date;
+		DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+		try {
+			date = "Premium: " + df.format(member.getPrmExpDate().getTime());
+		} catch (NullPointerException e1) {
+			try {
+				date = "Standard: " + df.format(member.getStdExpDate().getTime());
+			} catch (NullPointerException e2) {
+				date = "None";
+			}
+		}
+		JLabel lblPrmstd = new JLabel(date);
+		panel.add(lblPrmstd, "3, 2, left, default");
+		
+		JComboBox comboBoxMember = new JComboBox();
+		panel.add(comboBoxMember, "8, 2");
+		comboBoxMember.setModel(new DefaultComboBoxModel(new String[] {"Individual", "Group"}));
+		
+		JScrollPane scrollPane = new JScrollPane();
+		contentPane.add(scrollPane, BorderLayout.CENTER);
+		
+		tableMember = new JTable();
+		scrollPane.setViewportView(tableMember);
+		try {
+			List<Innerjoin_Ind_Grp_Activity> tempActivity = null;
+			tempActivity = gymDAO.searchActivity(mid);
+			
+			MemActivityTableModel model = new MemActivityTableModel(tempActivity);
+			tableMember.setModel(model);
+			tableMember.getColumnModel().getColumn(1).setCellRenderer(new TimestampCellRenderer());
+			tableMember.getColumnModel().getColumn(2).setCellRenderer(new TimestampCellRenderer());
+		} catch (Exception exc) {
+			JOptionPane.showMessageDialog(MemberUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
+		}
+		
+		JPanel panel_1 = new JPanel();
+		contentPane.add(panel_1, BorderLayout.SOUTH);
+		
+		
+		
+		JButton btnSignOut = new JButton("Sign Out");
+		btnSignOut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				setVisible(false);
+				dispose();
+				Login loginUI = new Login();
+				loginUI.setVisible(true);
+			}
+		});
+		
+		JButton btnSearch = new JButton("Search");
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					if (comboBoxMember.getSelectedItem().equals("Individual")) {
+						List<Individual_exercise_log> logs = gymDAO.getAllIndAct(mid);
+						MemIndActTableModel model = new MemIndActTableModel(logs);
+						tableMember.setModel(model);
+						tableMember.getColumnModel().getColumn(3).setCellRenderer(new TimestampCellRenderer());
+						tableMember.getColumnModel().getColumn(4).setCellRenderer(new TimestampCellRenderer());
+					}
+					else {
+						List<Group_exercise_log> logs = gymDAO.getAllGrpAct(mid);
+						MemGrpActTableModel model = new MemGrpActTableModel(logs);
+						tableMember.setModel(model);
+						tableMember.getColumnModel().getColumn(3).setCellRenderer(new TimestampCellRenderer());
+						tableMember.getColumnModel().getColumn(4).setCellRenderer(new TimestampCellRenderer());
+					}
+				}
+				catch (Exception exc) {
+					JOptionPane.showMessageDialog(MemberUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
+				}	
+			}
+		});
+		panel_1.add(btnSearch);
+		
+		JButton btnPurchase = new JButton("Purchase");
+		panel_1.add(btnPurchase);
+		btnPurchase.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PurchaseUI purchase = new PurchaseUI();
+				purchase.setVisible(true);
+			}
+		});
+		panel_1.add(btnSignOut);
+		
+		JButton btnExit = new JButton("Exit");
+		btnExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// close dialog
+				setVisible(false);
+				dispose();
+				Container tempFrame = btnExit.getParent();
+				do {
+					tempFrame = tempFrame.getParent();
+				} while (!(tempFrame instanceof JFrame)); {
+					((JFrame) tempFrame).dispose();
+					System.exit(1);
+				}
+			}
+		});
+		panel_1.add(btnExit);
+		
+		JToolBar toolBar = new JToolBar();
+		toolBar.setOrientation(SwingConstants.VERTICAL);
+		contentPane.add(toolBar, BorderLayout.WEST);
+		
+		JButton btnInsert = new JButton("Insert");
+		btnInsert.setBorderPainted(false);
+		btnInsert.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (comboBoxMember.getSelectedItem().equals("Individual")) {
+					// create dialog
+					MemIndActDialogue dialog = new MemIndActDialogue(MemberUI.this, gymDAO, null, false);
+	
+					// show dialog
+					dialog.setVisible(true);
+					
+				}
+				else {
+					// create dialog
+					MemGrpActDialogue dialog = new MemGrpActDialogue(MemberUI.this, gymDAO, null, false);
+	
+					// show dialog
+					dialog.setVisible(true);
+				}
+			}
+		});
+		toolBar.add(btnInsert);
+		
+		JButton btnDelete = new JButton("Delete");
+		btnDelete.setBorderPainted(false);
+		toolBar.add(btnDelete);
+		
+		JButton btnEdit = new JButton("Edit");
+		btnEdit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (comboBoxMember.getSelectedItem().equals("Individual")) {
+					// get the selected item
+					int row = tableMember.getSelectedRow();
+					
+					// make sure a row is selected
+					if (row < 0) {
+						JOptionPane.showMessageDialog(MemberUI.this, "You must select an activity", "Error",
+								JOptionPane.ERROR_MESSAGE);				
+						return;
+					}
+					
+					// get the current member
+					Individual_exercise_log tempLog = (Individual_exercise_log) tableMember.getValueAt(row, MemIndActTableModel.OBJECT_COL);
+					
+					// create dialog
+					MemIndActDialogue dialog = new MemIndActDialogue(MemberUI.this, gymDAO, 
+																tempLog, true);
+
+					// show dialog
+					dialog.setVisible(true);
+				}
+			}
+		});
+		btnEdit.setBorderPainted(false);
+		toolBar.add(btnEdit);
+		
+		JButton btnJoin = new JButton("join");
+		btnJoin.setBorderPainted(false);
+		btnJoin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					List<Innerjoin_Ind_Grp_Activity> tempActivity = null;
+					tempActivity = gymDAO.searchActivity(mid);
+					
+					MemActivityTableModel model = new MemActivityTableModel(tempActivity);
+					tableMember.setModel(model);
+					tableMember.getColumnModel().getColumn(1).setCellRenderer(new TimestampCellRenderer());
+					tableMember.getColumnModel().getColumn(2).setCellRenderer(new TimestampCellRenderer());
+					
+				} catch (Exception exc) {
+					JOptionPane.showMessageDialog(MemberUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
+				}
+			}
+		});
+		toolBar.add(btnJoin);
+	}
+
+	public void refreshIndActView() {
+		try {
+			List<Individual_exercise_log> indActivity = gymDAO.getAllIndAct(mid);
+
+			// create the model and update the "table"
+			MemIndActTableModel model = new MemIndActTableModel(indActivity);
+
+			tableMember.setModel(model);
+			tableMember.getColumnModel().getColumn(3).setCellRenderer(new TimestampCellRenderer());
+			tableMember.getColumnModel().getColumn(4).setCellRenderer(new TimestampCellRenderer());
+		} catch (Exception exc) {
+			JOptionPane.showMessageDialog(this, "Error: " + exc, "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	public void refreshGrpActView() {
+		try {
+			List<Group_exercise_log> grpActivity = gymDAO.getAllGrpAct(mid);
+
+			// create the model and update the "table"
+			MemGrpActTableModel model = new MemGrpActTableModel(grpActivity);
+
+			tableMember.setModel(model);
+			tableMember.getColumnModel().getColumn(4).setCellRenderer(new TimestampCellRenderer());
+			tableMember.getColumnModel().getColumn(5).setCellRenderer(new TimestampCellRenderer());
+		} catch (Exception exc) {
+			JOptionPane.showMessageDialog(this, "Error: " + exc, "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}		
+	}
+
+	public Member getMember() {
+		return member;
+	}
+
+	public void setMember(Member member) {
+		this.member = member;
+	}
+
+}

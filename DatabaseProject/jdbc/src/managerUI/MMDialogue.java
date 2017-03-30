@@ -212,10 +212,22 @@ public class MMDialogue extends JDialog {
 		Date prmExpDate = dateChooserPrm.getDate();
 		int branchId;
 		if (textFieldBranch.getText().isEmpty()) {
-			branchId = -1;
+			JOptionPane.showMessageDialog(
+					MMDialogue.this,
+					"You must enter Branch ID", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
 		}
 		else {
+			try {
 			branchId = Integer.parseInt(textFieldBranch.getText());
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(
+						MMDialogue.this,
+						"Branch ID must be a number", "Error",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 		}
 
 		Member tempMember = null;

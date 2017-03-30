@@ -50,7 +50,7 @@ public class PurchaseUI extends JFrame {
 		this.gymDAO = gymDAO;
 		this.member = member;
 		setTitle("Purchase");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 554, 260);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

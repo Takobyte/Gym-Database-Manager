@@ -1,0 +1,260 @@
+package UI;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import jdbc.GymDAO;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.layout.FormSpecs;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import com.toedter.calendar.JDateChooser;
+
+import core.Employee;
+import core.Member;
+
+import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.util.Date;
+import java.awt.event.ActionEvent;
+
+// Manager: Employee Dialogue Window
+public class MEDialogue extends JDialog {
+
+	private final JPanel contentPanel = new JPanel();
+	private ManagerUI managerUI;
+	private GymDAO gymDAO;
+	private JTextField textFieldName;
+	private JTextField textFieldJob;
+	private JTextField textFieldSalary;
+	private JTextField textFieldAddr;
+	private JTextField textFieldTel;
+	private JRadioButton rdbtnManagerFlag;
+	private JRadioButton rdbtnInstructorFlag;
+	private JDateChooser dateChooserDob;
+	
+	private Employee previousEmployee = null;
+	private boolean updateMode = false;
+
+	/**
+	 * Launch the application.
+	 */
+	public MEDialogue(ManagerUI theManagerUI, GymDAO theGymDAO,Employee previousEmployee, boolean updateMode) {
+		this();
+		managerUI = theManagerUI;
+		gymDAO = theGymDAO;
+		this.previousEmployee=previousEmployee;
+		this.updateMode=updateMode;
+		if (updateMode) {
+			setTitle("Update Employee");
+			populateGui(previousEmployee);
+		}
+	}
+	
+	private void populateGui(Employee employee) {
+		
+		textFieldName.setText(employee.getName());
+		textFieldJob.setText(employee.getJob_title());
+		textFieldSalary.setText(String.valueOf(employee.getSalary()));
+		textFieldAddr.setText(employee.getAddress());
+		textFieldTel.setText(employee.getTelephone());
+		dateChooserDob.setDate(employee.getDob());
+		if(employee.getManager_flag()){
+			rdbtnManagerFlag.setSelected(true);
+		}
+		if(employee.getInstructor_flag()){
+			rdbtnInstructorFlag.setSelected(true);
+			
+		}
+	}
+
+	/**
+	 * Create the dialog.
+	 */
+	public MEDialogue() {
+		setResizable(false);
+		setTitle("Add Employee");
+		setBounds(100, 100, 450, 415);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(new FormLayout(new ColumnSpec[] {
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("default:grow"),},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("default:grow"),
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("default:grow"),}));
+		{
+			JLabel lblName = new JLabel("Name:");
+			contentPanel.add(lblName, "2, 2, right, default");
+		}
+		{
+			textFieldName = new JTextField();
+			contentPanel.add(textFieldName, "4, 2, fill, default");
+			textFieldName.setColumns(10);
+		}
+		{
+			JLabel lblJobTitle = new JLabel("Job Title:");
+			contentPanel.add(lblJobTitle, "2, 4, right, default");
+		}
+		{
+			textFieldJob = new JTextField();
+			contentPanel.add(textFieldJob, "4, 4, fill, default");
+			textFieldJob.setColumns(10);
+		}
+		{
+			JLabel lblSalary = new JLabel("Salary:");
+			contentPanel.add(lblSalary, "2, 6, right, default");
+		}
+		{
+			textFieldSalary = new JTextField();
+			contentPanel.add(textFieldSalary, "4, 6, fill, default");
+			textFieldSalary.setColumns(10);
+		}
+		{
+			JLabel lblAddress = new JLabel("Address:");
+			contentPanel.add(lblAddress, "2, 8, right, default");
+		}
+		{
+			textFieldAddr = new JTextField();
+			contentPanel.add(textFieldAddr, "4, 8, fill, default");
+			textFieldAddr.setColumns(10);
+		}
+		{
+			JLabel lblDateOfBirth = new JLabel("Date of Birth:");
+			contentPanel.add(lblDateOfBirth, "2, 10");
+		}
+		{
+			dateChooserDob = new JDateChooser();
+			contentPanel.add(dateChooserDob, "4, 10, fill, fill");
+		}
+		{
+			JLabel lblTelephone = new JLabel("Telephone:");
+			contentPanel.add(lblTelephone, "2, 12, right, default");
+		}
+		{
+			textFieldTel = new JTextField();
+			contentPanel.add(textFieldTel, "4, 12, fill, default");
+			textFieldTel.setColumns(10);
+		}
+		{
+			JPanel panel = new JPanel();
+			contentPanel.add(panel, "4, 14, fill, fill");
+			{
+				rdbtnManagerFlag = new JRadioButton("Manager Flag");
+				panel.add(rdbtnManagerFlag);
+			}
+			{
+				rdbtnInstructorFlag = new JRadioButton("Instructor Flag");
+				panel.add(rdbtnInstructorFlag);
+			}
+		}
+		{
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			{
+				JButton okButton = new JButton("OK");
+				okButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						try {
+							saveEmployee();
+						} catch (ParseException e1) {
+							// Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+				});
+				okButton.setActionCommand("OK");
+				buttonPane.add(okButton);
+				getRootPane().setDefaultButton(okButton);
+			}
+			{
+				JButton cancelButton = new JButton("Cancel");
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						// close dialog
+						setVisible(false);
+						dispose();
+					}
+				});
+				cancelButton.setActionCommand("Cancel");
+				buttonPane.add(cancelButton);
+			}
+		}
+	}
+	
+	protected void saveEmployee() throws ParseException {
+		String name=textFieldName.getText();
+		String job_title=textFieldJob.getText();
+		int salary=Integer.parseInt(textFieldSalary.getText());
+		String address=textFieldAddr.getText();
+		String telephone=textFieldTel.getText();
+		Date dob= dateChooserDob.getDate();
+		boolean managerFlag=rdbtnManagerFlag.isSelected();
+		boolean instructorFlag=rdbtnInstructorFlag.isSelected();
+		Employee tmpEmployee=null;
+	
+		if(updateMode){
+		   tmpEmployee=previousEmployee;
+		   tmpEmployee.setName(name);
+		   tmpEmployee.setTelephone(telephone);
+		   tmpEmployee.setDob(dob);
+		   tmpEmployee.setManager_flag(rdbtnManagerFlag.isSelected());
+		   tmpEmployee.setInstructor_flag(rdbtnInstructorFlag.isSelected());
+		}
+		else {
+			tmpEmployee=new Employee(0, name, job_title, salary, address, dob, telephone, managerFlag, instructorFlag);
+		}
+		try{
+			//save to the database 
+			if(updateMode){
+				gymDAO.updateEmployee(tmpEmployee);
+			} else {
+				gymDAO.addEmployee(tmpEmployee);
+			}
+	   
+			//close 
+			setVisible(false);
+			dispose();
+			// refresh gui list
+			managerUI.refreshMemberView();
+			// show success message
+			JOptionPane.showMessageDialog(managerUI,
+					"Employee added succesfully.",
+					"Employee Added",
+					JOptionPane.INFORMATION_MESSAGE);
+   
+			} catch (Exception exc) {
+			JOptionPane.showMessageDialog(
+					managerUI,
+					"Error saving employee: "
+							+ exc.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+			}
+	}
+
+}

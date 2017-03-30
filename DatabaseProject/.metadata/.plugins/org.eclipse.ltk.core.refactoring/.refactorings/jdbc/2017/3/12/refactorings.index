@@ -6,3 +6,22 @@
 1489963589734	Rename type 'Driver'
 1489966908578	Rename type 'Gym'
 1489968385120	Rename field 'gym'
+1490145117704	Delete element
+1490145122161	Delete element
+1490147601097	Delete element
+1490148028150	Delete element
+1490151077510	Rename type 'Employees'
+1490155085965	Copy files
+1490156596413	Rename type 'ManagerTableModel'
+1490214438564	Delete element
+1490246302934	Rename field 'tableMember'
+1490316376695	Rename type 'ManagerAddMember'
+1490316392903	Rename type 'ManagerAddEmployee'
+1490398547238	Rename local variable 'lblEnterName'
+1490398639580	Rename type 'ManagerEmployeeDialogue'
+1490398684309	Rename type 'ManagerMemberDialogue'
+1490398753153	Rename type 'ManagerEmployeeTableModel'
+1490398766297	Rename type 'ManagerMemberTableModel'
+1490402123073	Rename type 'MemberUI'
+1490402939068	Rename type 'Purchase'
+1490403521618	Delete element

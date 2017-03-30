@@ -53,7 +53,9 @@ public class MSDialogue extends JDialog {
 	}
 	
 	private void populateGui(Supplier previousSupp) {
-		//TODO: fill this out
+		textFieldName.setText(previousSupp.getName());
+		textFieldTelephone.setText(previousSupp.getTelephone());
+		textFieldAddress.setText(previousSupp.getAddress());
 	}
 
 	/**

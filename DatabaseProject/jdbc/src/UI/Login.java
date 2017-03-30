@@ -27,6 +27,10 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+/*
+ * Author: Jung Wook So
+ * GUI for members, employees, managers
+ */
 public class Login extends JFrame {
 
 	private JPanel loginMainBox;

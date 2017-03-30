@@ -175,8 +175,40 @@ public class MRDialogue extends JDialog {
 		
 		// get the room info from gui
 		String descriptive_name = textFieldDName.getText();
-		int capacity = Integer.parseInt(textFieldCapacity.getText());
-		int branch_id = Integer.parseInt(textFieldBranch.getText());
+		int capacity = 0;
+		int branch_id = 0;
+		String tempCapacity = textFieldCapacity.getText();
+		String tempBranchId = textFieldBranch.getText();
+		if (!tempCapacity.isEmpty()) {
+			try {
+				capacity = Integer.parseInt(tempCapacity);
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(
+						MRDialogue.this,
+						"Capacity must be a number", "Error",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+		if (!tempBranchId.isEmpty()) {
+			try {
+				branch_id = Integer.parseInt(tempBranchId);
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(
+						MRDialogue.this,
+						"Branch ID must be a number", "Error",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+		else {
+			JOptionPane.showMessageDialog(
+					MRDialogue.this,
+					"You must enter Branch ID", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
 		Boolean activity_room_flag = rdbtnActivity.isSelected();
 		Boolean main_equipment_room_flag = rdbtnMainEq.isSelected();
 		

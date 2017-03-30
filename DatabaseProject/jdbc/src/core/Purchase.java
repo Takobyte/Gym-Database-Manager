@@ -23,6 +23,19 @@ public Purchase(int pid, int gid, int mid, double amt_paid, Date paid_date, int 
 	this.monthly_fee = monthly_fee;
 	this.type = type;
 }
+
+public Purchase() {
+	this.pid = 0;
+	this.gid = 0;
+	this.mid = 0;
+	this.amt_paid = 0;
+	this.paid_date = null;
+	this.type_id = 0;
+	this.name = "";
+	this.monthly_fee = null;
+	this.type = "";
+}
+
 public int getPid() {
 	return pid;
 }

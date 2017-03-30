@@ -14,6 +14,7 @@ import com.jgoodies.forms.layout.RowSpec;
 import UI.MemberUI;
 import core.Individual_exercise_log;
 import jdbc.GymDAO;
+import managerUI.MEDialogue;
 
 import com.jgoodies.forms.layout.FormSpecs;
 import javax.swing.JLabel;
@@ -65,29 +66,36 @@ public class MemIndActDialogue extends JDialog {
 	private void populateGui(Individual_exercise_log log) {
 		textFieldTitle.setText(log.getTitle());
 		textFieldActivityName.setText(log.getIndividual_activity_name());
-		String str = log.getStart_time().toString();
-		String[] splitStr = str.split("\\s+");
+		String str = "";
 		DateFormat odfDate = new SimpleDateFormat("YYYY-MM-dd");
 		DateFormat odfTime = new SimpleDateFormat("HH:mm:ss.SSS");
 		DateFormat ndfDate = new SimpleDateFormat("MMMMM d, yyyy");
 		DateFormat ndfTime = new SimpleDateFormat("h:mma");
-		try {
-			Date oldDate = odfDate.parse(splitStr[0]);
-			dateTimePickerStart.datePicker.setText(ndfDate.format(oldDate));
-			Date oldTime = odfTime.parse(splitStr[1]);
-			dateTimePickerStart.timePicker.setText(ndfTime.format(oldTime));
-		} catch (ParseException e) {
-			e.printStackTrace();
+		if (log.getStart_time() != null) {
+			str = log.getStart_time().toString();
+			String[] splitStr = str.split("\\s+");
+			
+			try {
+				Date oldDate = odfDate.parse(splitStr[0]);
+				dateTimePickerStart.datePicker.setText(ndfDate.format(oldDate));
+				Date oldTime = odfTime.parse(splitStr[1]);
+				dateTimePickerStart.timePicker.setText(ndfTime.format(oldTime));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 		}
-		String str2 = log.getEnd_time().toString();
-		String[] splitStr2 = str2.split("\\s+");
-		try {
-			Date oldDate = odfDate.parse(splitStr2[0]);
-			dateTimePickerEnd.datePicker.setText(ndfDate.format(oldDate));
-			Date oldTime = odfTime.parse(splitStr2[1]);
-			dateTimePickerEnd.timePicker.setText(ndfTime.format(oldTime));
-		} catch (ParseException e) {
-			e.printStackTrace();
+		String str2 = "";
+		if (log.getEnd_time() != null) {
+			str2 = log.getEnd_time().toString();
+			String[] splitStr2 = str2.split("\\s+");
+			try {
+				Date oldDate = odfDate.parse(splitStr2[0]);
+				dateTimePickerEnd.datePicker.setText(ndfDate.format(oldDate));
+				Date oldTime = odfTime.parse(splitStr2[1]);
+				dateTimePickerEnd.timePicker.setText(ndfTime.format(oldTime));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -188,27 +196,55 @@ public class MemIndActDialogue extends JDialog {
 		// get the employee info from gui
 		String title = textFieldTitle.getText();
 		String activityName = textFieldActivityName.getText();
+		if (activityName.isEmpty()) {
+			JOptionPane.showMessageDialog(
+					MemIndActDialogue.this,
+					"You must specify the exact activity name", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 		Timestamp start_time;
 		Timestamp end_time;
+		String tempStartTime = dateTimePickerStart.timePicker.getText();
+		String tempStartDate = dateTimePickerStart.datePicker.getText();
+		String tempEndTime = dateTimePickerEnd.timePicker.getText();
+		String tempEndDate = dateTimePickerEnd.datePicker.getText();
 		try {
-			String date = dateTimePickerStart.datePicker.getText() + " " + dateTimePickerStart.timePicker.getText();
-			DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
-			Date parsedDate = df.parse(date);
-			Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
-			start_time = ts;
-		} catch (Exception e){
-			start_time = null;
-		}
+			if (!tempStartTime.isEmpty() && !tempStartDate.isEmpty()) {
+				String date = dateTimePickerStart.datePicker.getText() + " " + dateTimePickerStart.timePicker.getText();
+				DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
+				Date parsedDate = df.parse(date);
+				Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
+				start_time = ts;
+			}
+			else {
+				start_time = null;
+			}
+		} catch (Exception pe) {
+			JOptionPane.showMessageDialog(
+					MemIndActDialogue.this,
+					"Date must be in a correct date format (MMMMM d, yyyy h:mma)", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		} 
 		try {
-			String date = dateTimePickerEnd.datePicker.getText() + " " + dateTimePickerEnd.timePicker.getText();
-			DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
-			Date parsedDate = df.parse(date);
-			Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
-			end_time = ts;
-		} catch (Exception e) {
-			end_time = null;
-		}
-
+			if (!tempEndTime.isEmpty() && !tempEndDate.isEmpty() ) {
+				String date = dateTimePickerEnd.datePicker.getText() + " " + dateTimePickerEnd.timePicker.getText();
+				DateFormat df = new SimpleDateFormat("MMMMM d, yyyy h:mma");
+				Date parsedDate = df.parse(date);
+				Timestamp ts = new java.sql.Timestamp(parsedDate.getTime());
+				end_time = ts;
+			}
+			else {
+				end_time = null;
+			}
+		} catch (Exception pe) {
+			JOptionPane.showMessageDialog(
+					MemIndActDialogue.this,
+					"Date must be in a correct date format (MMMMM d, yyyy h:mma)", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		} 
 		Individual_exercise_log tempIndAct = null;
 		
 		if (updateMode) {

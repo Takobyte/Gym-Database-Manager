@@ -1,0 +1,47 @@
+package core;
+import java.util.Date;
+public class Purchases {
+ String pid;
+ String gid;
+ String mid;
+ float amt_paid;
+ Date paid_date;
+public Purchases(String pid, String gid, String mid, float amt_paid, Date paid_date) {
+	this.pid = pid;
+	this.gid = gid;
+	this.mid = mid;
+	this.amt_paid = amt_paid;
+	this.paid_date = paid_date;
+}
+public String getPid() {
+	return pid;
+}
+public void setPid(String pid) {
+	this.pid = pid;
+}
+public String getGid() {
+	return gid;
+}
+public void setGid(String gid) {
+	this.gid = gid;
+}
+public String getMid() {
+	return mid;
+}
+public void setMid(String mid) {
+	this.mid = mid;
+}
+public float getAmt_paid() {
+	return amt_paid;
+}
+public void setAmt_paid(float amt_paid) {
+	this.amt_paid = amt_paid;
+}
+public Date getPaid_date() {
+	return paid_date;
+}
+public void setPaid_date(Date paid_date) {
+	this.paid_date = paid_date;
+}
+ 
+}

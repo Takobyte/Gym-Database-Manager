@@ -34,9 +34,6 @@ public class MemIndActTableModel extends AbstractTableModel {
 	@Override
 	public Class getColumnClass(int c) {
 		Object column = getValueAt(0,c);
-		if (c == 3 || c == 4) {
-			return java.sql.Time.class;
-		}
 		if (column == null) {
 			return new Object().getClass();
 		} else {

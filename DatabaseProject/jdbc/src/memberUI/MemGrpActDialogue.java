@@ -11,6 +11,8 @@ import javax.swing.border.EmptyBorder;
 import UI.MemberUI;
 import core.Group_exercise_log;
 import jdbc.GymDAO;
+import managerUI.MEqDialogue;
+
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.RowSpec;
@@ -144,7 +146,26 @@ public class MemGrpActDialogue extends JDialog {
 		// get the employee info from gui
 		String title = textFieldTitle.getText();
 		String activity_name = textFieldTitle.getText();
-		int gid = Integer.parseInt(textFieldGid.getText());
+		String tempGid = textFieldGid.getText();
+		int gid = 0;
+		if (!tempGid.isEmpty()) {
+			try {
+				gid = Integer.parseInt(tempGid);
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(
+						MemGrpActDialogue.this,
+						"Group ID must be a number", "Error",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+		else {
+			JOptionPane.showMessageDialog(
+					MemGrpActDialogue.this,
+					"You must enter Group ID", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 //		Timestamp start_time;
 //		Timestamp end_time;
 //		try {

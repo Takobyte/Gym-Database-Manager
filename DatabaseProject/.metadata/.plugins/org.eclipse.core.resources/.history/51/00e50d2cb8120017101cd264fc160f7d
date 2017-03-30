@@ -1,0 +1,77 @@
+package UI;
+
+import java.util.List;
+
+import javax.swing.table.AbstractTableModel;
+
+import core.Employee;
+import core.Innerjoin_Members_Gym;
+
+public class Innerjoin extends AbstractTableModel {
+	
+	public static final int OBJECT_COL = -1;
+	private String[] columnNames = {"mid", "name", "telephone", "dob", "address", "std_exp_date", "prm_exp_date", "branch_id", "gym_name", "gym_address"
+			"open_date", "gym_telephone"};
+	private List<Innerjoin_Members_Gym> member_gym;
+	
+	public Innerjoin(List<Innerjoin_Members_Gym> member_gym) {
+		this.member_gym = member_gym;
+	}
+
+	@Override
+	public int getColumnCount() {
+		return columnNames.length;
+	}
+
+	@Override
+	public int getRowCount() {
+		return employees.size();
+	}
+	
+	@Override
+	public String getColumnName(int col) {
+		return columnNames[col];
+	}
+
+	@Override
+	public Class getColumnClass(int c) {
+		Object column = getValueAt(0,c);
+		if (column == null) {
+			return new Object().getClass();
+		} else {
+			return column.getClass();
+		}
+	}
+
+	@Override
+	public Object getValueAt(int row, int col) {
+		Employee tempEmployee = employees.get(row);
+
+		switch (col) {
+		case 0:
+			return tempEmployee.getEmp_id();
+		case 1:
+			return tempEmployee.getName();
+		case 2:
+			return tempEmployee.getJob_title();
+		case 3:
+			return tempEmployee.getSalary();
+		case 4:
+			return tempEmployee.getAddress();
+		case 5:
+			return tempEmployee.getDob();
+		case 6:
+			return tempEmployee.getTelephone();
+		case 7:
+			return tempEmployee.getManager_flag();
+		case 8:
+			return tempEmployee.getInstructor_flag();
+		case OBJECT_COL:
+			return tempEmployee;
+		default:
+			return tempEmployee.getName();
+		}
+	}
+
+
+}

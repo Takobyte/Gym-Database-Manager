@@ -1,0 +1,211 @@
+package UI;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.layout.FormSpecs;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import com.toedter.calendar.JDateChooser;
+
+import core.Gym;
+import core.Member;
+import jdbc.GymDAO;
+
+import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.util.Date;
+import java.awt.event.ActionEvent;
+
+public class MGDialogue extends JDialog {
+
+	private final JPanel contentPanel = new JPanel();
+	private JTextField textFieldName;
+	private JTextField textFieldAddr;
+	private JTextField textFieldTel;
+	private JDateChooser dateChooserOpened;
+
+	private ManagerUI managerUI;
+	private GymDAO gymDAO;
+	
+	private Gym previousGym = null;
+	private boolean updateMode = false;
+	
+	/**
+	 * Launch the application.
+	 */
+	public MGDialogue(ManagerUI theManagerUI, GymDAO theGymDAO, Gym previousGym, boolean updateMode) {
+		this();
+		managerUI = theManagerUI;
+		gymDAO = theGymDAO;
+		this.previousGym = previousGym;
+		this.updateMode = updateMode;
+		if (updateMode) {
+			setTitle("Update Gym");
+			populateGui(previousGym);
+		}
+	}
+	
+	private void populateGui(Gym gym) {
+		textFieldName.setText(gym.getName());
+		textFieldAddr.setText(gym.getAddress());
+		dateChooserOpened.setDate(gym.getOpen_date());
+		textFieldTel.setText(gym.getTelephone());
+	}
+
+	/**
+	 * Create the dialog.
+	 */
+	public MGDialogue() {
+		setTitle("Add Gym");
+		setBounds(100, 100, 450, 251);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setLayout(new FormLayout(new ColumnSpec[] {
+				FormSpecs.RELATED_GAP_COLSPEC,
+				FormSpecs.DEFAULT_COLSPEC,
+				FormSpecs.RELATED_GAP_COLSPEC,
+				ColumnSpec.decode("default:grow"),},
+			new RowSpec[] {
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				RowSpec.decode("default:grow"),
+				FormSpecs.RELATED_GAP_ROWSPEC,
+				FormSpecs.DEFAULT_ROWSPEC,}));
+		{
+			JLabel lblName = new JLabel("Name:");
+			contentPanel.add(lblName, "2, 2, right, default");
+		}
+		{
+			textFieldName = new JTextField();
+			contentPanel.add(textFieldName, "4, 2, fill, default");
+			textFieldName.setColumns(10);
+		}
+		{
+			JLabel lblAddress = new JLabel("Address:");
+			contentPanel.add(lblAddress, "2, 4, right, default");
+		}
+		{
+			textFieldAddr = new JTextField();
+			textFieldAddr.setText("");
+			contentPanel.add(textFieldAddr, "4, 4, fill, default");
+			textFieldAddr.setColumns(10);
+		}
+		{
+			JLabel lblDateOpened = new JLabel("Date Opened:");
+			contentPanel.add(lblDateOpened, "2, 6");
+		}
+		{
+			dateChooserOpened = new JDateChooser();
+			contentPanel.add(dateChooserOpened, "4, 6, fill, fill");
+		}
+		{
+			JLabel lblTelephone = new JLabel("Telephone:");
+			contentPanel.add(lblTelephone, "2, 8, right, default");
+		}
+		{
+			textFieldTel = new JTextField();
+			contentPanel.add(textFieldTel, "4, 8, fill, default");
+			textFieldTel.setColumns(10);
+		}
+		{
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			{
+				JButton okButton = new JButton("OK");
+				okButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						try {
+							saveGym();
+						} catch (ParseException e1) {
+							e1.printStackTrace();
+						}
+					}
+				});
+				okButton.setActionCommand("OK");
+				buttonPane.add(okButton);
+				getRootPane().setDefaultButton(okButton);
+			}
+			{
+				JButton cancelButton = new JButton("Cancel");
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						// close dialog
+						setVisible(false);
+						dispose();
+					}
+				});
+				cancelButton.setActionCommand("Cancel");
+				buttonPane.add(cancelButton);
+			}
+		}
+		
+	}
+	
+	protected void saveGym() throws ParseException {
+		
+		// get the employee info from gui
+		String name = textFieldName.getText();
+		String addr = textFieldAddr.getText();
+		Date openDate = dateChooserOpened.getDate();
+		String telephone = textFieldTel.getText();
+
+		Gym tempGym = null;
+		
+		if (updateMode) {
+			tempGym = previousGym;
+			tempGym.setName(name);
+			tempGym.setAddress(addr);
+			tempGym.setOpen_date(openDate);
+			tempGym.setTelephone(telephone);
+			
+		}
+		else {
+			tempGym = new Gym(0, name, addr, openDate, telephone);
+		}
+		
+		try {
+			// save to the database
+			if (updateMode) {
+				gymDAO.updateGym(tempGym);
+			}
+			else {
+				gymDAO.addGym(tempGym);
+			}
+
+			// close dialog
+			setVisible(false);
+			dispose();
+
+			// refresh gui list
+			managerUI.refreshMemberView();
+			
+			// show success message
+			JOptionPane.showMessageDialog(managerUI,
+					"Member added succesfully.",
+					"Member Added",
+					JOptionPane.INFORMATION_MESSAGE);
+		} catch (Exception exc) {
+			JOptionPane.showMessageDialog(
+					managerUI,
+					"Error saving member: "
+							+ exc.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		
+	}
+
+}

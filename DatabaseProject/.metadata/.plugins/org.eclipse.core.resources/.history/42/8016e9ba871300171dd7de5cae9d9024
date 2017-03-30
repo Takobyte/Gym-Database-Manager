@@ -1,0 +1,72 @@
+package managerUI;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import UI.ManagerUI;
+import core.Member;
+import core.Supplier;
+import jdbc.GymDAO;
+
+public class MSDialogue extends JDialog {
+
+	private final JPanel contentPanel = new JPanel();
+	
+	private ManagerUI managerUI;
+	private GymDAO gymDAO;
+	
+	private Supplier previousSupp = null;
+	private boolean updateMode = false;
+
+	/**
+	 * Launch the application.
+	 */
+	public MSDialogue(ManagerUI theManagerUI, GymDAO theGymDAO, Supplier previousSupp, boolean updateMode) {
+		this();
+		managerUI = theManagerUI;
+		gymDAO = theGymDAO;
+		this.previousSupp = previousSupp;
+		this.updateMode = updateMode;
+		if (updateMode) {
+			setTitle("Update Supplier");
+			populateGui(previousSupp);
+		}
+	}
+	
+	private void populateGui(Supplier previousSupp) {
+		//TODO: fill this out
+	}
+
+	/**
+	 * Create the dialog.
+	 */
+	public MSDialogue() {
+		setBounds(100, 100, 450, 300);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel.setLayout(new FlowLayout());
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		{
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			{
+				JButton okButton = new JButton("OK");
+				okButton.setActionCommand("OK");
+				buttonPane.add(okButton);
+				getRootPane().setDefaultButton(okButton);
+			}
+			{
+				JButton cancelButton = new JButton("Cancel");
+				cancelButton.setActionCommand("Cancel");
+				buttonPane.add(cancelButton);
+			}
+		}
+	}
+
+}

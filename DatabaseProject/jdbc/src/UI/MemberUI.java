@@ -153,8 +153,8 @@ public class MemberUI extends JFrame {
 						List<Group_exercise_log> logs = gymDAO.getAllGrpAct(mid);
 						MemGrpActTableModel model = new MemGrpActTableModel(logs);
 						tableMember.setModel(model);
-						tableMember.getColumnModel().getColumn(3).setCellRenderer(new TimestampCellRenderer());
 						tableMember.getColumnModel().getColumn(4).setCellRenderer(new TimestampCellRenderer());
+						tableMember.getColumnModel().getColumn(5).setCellRenderer(new TimestampCellRenderer());
 					}
 					else if (comboBoxMember.getSelectedItem().equals("Purchase Log")) {
 						List<Purchase> logs = gymDAO.getAllPurchase(mid);

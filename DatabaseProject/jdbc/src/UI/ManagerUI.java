@@ -25,6 +25,7 @@ import core.Employee;
 import core.Gym;
 import core.Innerjoin_Members_Gym;
 import core.Member;
+import core.Purchase;
 import core.Room;
 import core.Equipment;
 import core.Supplier;
@@ -102,7 +103,7 @@ public class ManagerUI extends JFrame{
 	 */
 	private void initialize() {
 		setTitle("Manager");
-		setBounds(100, 100, 579, 338);
+		setBounds(100, 100, 579, 344);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -152,6 +153,58 @@ public class ManagerUI extends JFrame{
 		JButton btnSearchMng = new JButton("Search");
 		btnSearchMng.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				// Special functions
+				if (txtbNameMng.getText().toString().startsWith("fn.")) {
+					if (isManager) {
+						// Function: average revenue min
+						if (txtbNameMng.getText().equals("fn.revMin")) {
+							Purchase purchase = null;
+							try {
+								purchase = gymDAO.getRevenue("asc");
+							} catch (Exception exc) {
+								JOptionPane.showMessageDialog(ManagerUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
+							}
+							
+							// show success message
+							JOptionPane.showMessageDialog(ManagerUI.this,
+									"Minimum average revenue for all classes: ClassID(" + purchase.getGid() + "), Min: " + purchase.getAmt_paid(),
+									"Minimum Average Revenue",
+									JOptionPane.INFORMATION_MESSAGE);
+						}
+						// Function: average revenue max
+						else if (txtbNameMng.getText().equals("fn.revMax")) {
+							Purchase purchase = null;
+							try {
+								purchase = gymDAO.getRevenue("desc");
+							} catch (Exception exc) {
+								JOptionPane.showMessageDialog(ManagerUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
+							}
+							
+							// show success message
+							JOptionPane.showMessageDialog(ManagerUI.this,
+									"Minimum average revenue for all classes: ClassID(" + purchase.getGid() + "), Min: " + purchase.getAmt_paid(),
+									"Minimum Average Revenue",
+									JOptionPane.INFORMATION_MESSAGE);
+						}
+						// Function: get members who are attending all types of group classes
+						else if (txtbNameMng.getText().equals("fn.getMemberIAC")) {
+							List<Member> members = null;
+							try {
+								members = gymDAO.getAllMembersInAllClasses();
+							} catch (Exception exc) {
+								
+							}
+							MMTableModel model = new MMTableModel(members);
+							tableManager.setModel(model);
+						}
+					}
+					//employee
+					else {
+						//saved for later
+					}
+					return;
+				}
+				
 				// Get last name from text field
 				try {
 					if (comboBoxMng.getSelectedItem() == "Member List") {
@@ -499,6 +552,88 @@ public class ManagerUI extends JFrame{
 								JOptionPane.ERROR_MESSAGE);
 					}
 				}
+				else if (comboBoxMng.getSelectedItem().equals("Equipment List")) {
+					try {
+						// get the selected row
+						int row = tableManager.getSelectedRow();
+
+						// make sure a row is selected
+						if (row < 0) {
+							JOptionPane.showMessageDialog(ManagerUI.this, 
+									"You must select an equipment", "Error", JOptionPane.ERROR_MESSAGE);				
+							return;
+						}
+
+						// prompt the user
+						int response = JOptionPane.showConfirmDialog(
+								ManagerUI.this, "Delete this equipment?", "Confirm", 
+								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+						if (response != JOptionPane.YES_OPTION) {
+							return;
+						}
+
+						// get the current gym
+						Equipment tempEq = (Equipment) tableManager.getValueAt(row, MEqTableModel.OBJECT_COL);
+
+						// delete the member
+						gymDAO.delete(tempEq.getEquip_id(), "Equipment");
+
+						// refresh GUI
+						refreshEqView();
+
+						// show success message
+						JOptionPane.showMessageDialog(ManagerUI.this,
+								"Equipment deleted succesfully.", "Equipment Deleted",
+								JOptionPane.INFORMATION_MESSAGE);
+
+					} catch (Exception exc) {
+						JOptionPane.showMessageDialog(ManagerUI.this,
+								"Error deleting equipment: " + exc.getMessage(), "Error",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				else if (comboBoxMng.getSelectedItem().equals("Supplier List")) {
+					try {
+						// get the selected row
+						int row = tableManager.getSelectedRow();
+
+						// make sure a row is selected
+						if (row < 0) {
+							JOptionPane.showMessageDialog(ManagerUI.this, 
+									"You must select a supplier", "Error", JOptionPane.ERROR_MESSAGE);				
+							return;
+						}
+
+						// prompt the user
+						int response = JOptionPane.showConfirmDialog(
+								ManagerUI.this, "Delete this supplier?", "Confirm", 
+								JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+						if (response != JOptionPane.YES_OPTION) {
+							return;
+						}
+
+						// get the current gym
+						Supplier tempSupplier = (Supplier) tableManager.getValueAt(row, MSTableModel.OBJECT_COL);
+
+						// delete the member
+						gymDAO.delete(tempSupplier.getSid(), "Supplier");
+
+						// refresh GUI
+						refreshSupplierView();
+
+						// show success message
+						JOptionPane.showMessageDialog(ManagerUI.this,
+								"Supplier deleted succesfully.", "Supplier Deleted",
+								JOptionPane.INFORMATION_MESSAGE);
+
+					} catch (Exception exc) {
+						JOptionPane.showMessageDialog(ManagerUI.this,
+								"Error deleting equipment: " + exc.getMessage(), "Error",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				}
 			}
 		});
 		btnDeleteMng.setBorderPainted(false);
@@ -571,6 +706,67 @@ public class ManagerUI extends JFrame{
 					// show dialog
 					dialog.setVisible(true);
 				}
+				else if (comboBoxMng.getSelectedItem().equals("Room List")) {
+					// get the selected item
+					int row = tableManager.getSelectedRow();
+					
+					// make sure a row is selected
+					if (row < 0) {
+						JOptionPane.showMessageDialog(ManagerUI.this, "You must select a Room", "Error",
+								JOptionPane.ERROR_MESSAGE);				
+						return;
+					}
+					
+					// get the current employee
+					Room tempRoom = (Room) tableManager.getValueAt(row, MRTableModel.OBJECT_COL);
+					
+					// create dialog
+					MRDialogue dialog = new MRDialogue(ManagerUI.this, gymDAO, tempRoom, true);
+
+					// show dialog
+					dialog.setVisible(true);
+				}
+				else if (comboBoxMng.getSelectedItem().equals("Equipment List")) {
+					// get the selected item
+					int row = tableManager.getSelectedRow();
+					
+					// make sure a row is selected
+					if (row < 0) {
+						JOptionPane.showMessageDialog(ManagerUI.this, "You must select a Equipment", "Error",
+								JOptionPane.ERROR_MESSAGE);				
+						return;
+					}
+					
+					// get the current employee
+					Equipment tempEq = (Equipment) tableManager.getValueAt(row, MEqTableModel.OBJECT_COL);
+					
+					// create dialog
+					MEqDialogue dialog = new MEqDialogue(ManagerUI.this, gymDAO, tempEq, true);
+
+					// show dialog
+					dialog.setVisible(true);
+				}
+				//TODO: Supplier edit
+				else if (comboBoxMng.getSelectedItem().equals("Supplier List")) {
+					// get the selected item
+					int row = tableManager.getSelectedRow();
+					
+					// make sure a row is selected
+					if (row < 0) {
+						JOptionPane.showMessageDialog(ManagerUI.this, "You must select a Supplier", "Error",
+								JOptionPane.ERROR_MESSAGE);				
+						return;
+					}
+					
+					// get the current employee
+					Supplier tempSupp = (Supplier) tableManager.getValueAt(row, MSTableModel.OBJECT_COL);
+					
+					// create dialog
+					MSDialogue dialog = new MSDialogue(ManagerUI.this, gymDAO, tempSupp, true);
+
+					// show dialog
+					dialog.setVisible(true);
+				}
 			}
 		});
 		btnEditMng.setBorderPainted(false);
@@ -624,6 +820,7 @@ public class ManagerUI extends JFrame{
 					tableName = tableName.trim();
 				}
 				int sum = 0;
+				
 				try {
 					sum = gymDAO.getSum(colName, tableName);
 				} catch (Exception exc) {
@@ -843,6 +1040,18 @@ public class ManagerUI extends JFrame{
 		toolBarMng.add(btnJoin);
 	}
 	
+	public void refreshEqView() {
+		try {
+			List<Equipment> equipment = gymDAO.getAllEquipments();
+			// create the model and update the "table"
+			MEqTableModel model = new MEqTableModel(equipment);
+			tableManager.setModel(model);
+		} catch (Exception exc) {
+			JOptionPane.showMessageDialog(this, "Error: " + exc, "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
 	public void refreshEmployeeView() {
 		try {
 			List<Employee> employees = gymDAO.getAllEmployees();
