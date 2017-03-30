@@ -72,7 +72,7 @@ public class MMDialogue extends JDialog {
 		dateChooserDob.setDate(member.getDob());
 		textFieldAddr.setText(member.getAddr());
 		dateChooserStd.setDate(member.getStdExpDate());
-		dateChooserStd.setDate(member.getPrmExpDate());
+		dateChooserPrm.setDate(member.getPrmExpDate());
 		textFieldBranch.setText(String.valueOf(member.getBranchId()));
 	}
 

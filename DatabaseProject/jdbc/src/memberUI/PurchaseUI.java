@@ -42,23 +42,6 @@ public class PurchaseUI extends JFrame {
 	private JRadioButton rdbtnPremium;
 	private JCheckBox chckbxClass;
 	
-
-	/**
-	 * Launch the application.
-	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					PurchaseUI frame = new PurchaseUI();
-//					frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
-
 	/**
 	 * Create the frame.
 	 */
@@ -116,37 +99,9 @@ public class PurchaseUI extends JFrame {
 		JButton btnPurchase = new JButton("Purchase");
 		btnPurchase.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (chckbxClass.isSelected() && !memberUI.isPremium() && !rdbtnPremium.isSelected()) {
-					// get the selected item
-					int row = tableClass.getSelectedRow();
-					
-					// make sure a row is selected
-					if (row < 0) {
-						JOptionPane.showMessageDialog(PurchaseUI.this, "You must select a class", "Error",
-								JOptionPane.ERROR_MESSAGE);				
-						return;
-					}
-					
-					// get the current class
-					Group_class tempClass = (Group_class) tableClass.getValueAt(row, MemClassTableModel.OBJECT_COL);
-					
-					saveClass(tempClass);
-				}
-				if (rdbtnPremium.isSelected() && !chckbxClass.isSelected()) {
-					if (member.getPrmExpDate() == null) {
-						DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-						LocalDate incDate = LocalDate.now().plusMonths(1);
-						
-						member.setPrmExpDate(java.sql.Date.valueOf(dtf.format(incDate)));
-						try {
-							gymDAO.updateMember(member);
-							memberUI.getLblPrmstd().setText("Premium: " + dtf.format(incDate));
-						
-						} catch (Exception e1) {
-							e1.printStackTrace();
-						}
-					}
-					else {
+				// if it is a premium member
+				if (memberUI.isPremium()) {
+					if (rdbtnPremium.isSelected()) {
 						DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 						Date tempDate = member.getPrmExpDate();
 						java.sql.Date sqlDate = new java.sql.Date(tempDate.getTime());
@@ -157,51 +112,223 @@ public class PurchaseUI extends JFrame {
 							gymDAO.updateMember(member);
 							memberUI.getLblPrmstd().setText("Premium: " + dtf.format(incDate));
 							
-						} catch (Exception e1) {
-							e1.printStackTrace();
+						} catch (Exception exc) {
+							setVisible(false);
+							dispose();
+							JOptionPane.showMessageDialog(
+									memberUI,
+									"Error purchasing: "
+											+ exc.getMessage(), "Error",
+									JOptionPane.ERROR_MESSAGE);
 						}
 					}
 				}
-				else if (rdbtnStandard.isSelected()) {
-					if (member.getPrmExpDate() != null) {
-						return;
-					}
-					if (member.getStdExpDate() == null) {
-						DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-						LocalDate incDate = LocalDate.now().plusMonths(1);
-						member.setStdExpDate(java.sql.Date.valueOf(incDate));
-						try {
-						gymDAO.updateMember(member);
-						memberUI.getLblPrmstd().setText("Standard: " + dtf.format(incDate));
-						
-						} catch (Exception e1) {
-							e1.printStackTrace();
-						}
-					}
-					else {
-						DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-						Date tempDate = member.getStdExpDate();
-						java.sql.Date sqlDate = new java.sql.Date(tempDate.getTime());
-						LocalDate incDate = sqlDate.toLocalDate();
-						member.setStdExpDate(java.sql.Date.valueOf(incDate));
-						try {
-							gymDAO.updateMember(member);
-							memberUI.getLblPrmstd().setText("Standard: " + dtf.format(incDate));
+				// if it is a standard member or a non-member
+				else { 
+					// Premium selection
+					if (rdbtnPremium.isSelected()) {
+						// if member has no premium membership
+						if (member.getPrmExpDate() == null) {
+							DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+							LocalDate incDate = LocalDate.now().plusMonths(1);
 							
-						} catch (Exception e1) {
-							e1.printStackTrace();
+							member.setPrmExpDate(java.sql.Date.valueOf(incDate));
+							try {
+								gymDAO.updateMember(member);
+								memberUI.getLblPrmstd().setText("Premium: " + dtf.format(incDate));
+							
+							} catch (Exception exc) {
+								setVisible(false);
+								dispose();
+								JOptionPane.showMessageDialog(
+										memberUI,
+										"Error purchasing: "
+												+ exc.getMessage(), "Error",
+										JOptionPane.ERROR_MESSAGE);
+							}
 						}
-					
+//						DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+//						Date tempDate = member.getPrmExpDate();
+//						java.sql.Date sqlDate = new java.sql.Date(tempDate.getTime());
+//						LocalDate incDate = sqlDate.toLocalDate().plusMonths(1);
+//						tempDate = java.sql.Date.valueOf(incDate);
+//						member.setPrmExpDate(tempDate);
+//						try {
+//							gymDAO.updateMember(member);
+//							memberUI.getLblPrmstd().setText("Premium: " + dtf.format(incDate));
+//							
+//						} catch (Exception exc) {
+//							setVisible(false);
+//							dispose();
+//							JOptionPane.showMessageDialog(
+//									memberUI,
+//									"Error purchasing: "
+//											+ exc.getMessage(), "Error",
+//									JOptionPane.ERROR_MESSAGE);
+//						}
+					}
+					// standard selection
+					else if (rdbtnStandard.isSelected()) {
+						// if member has no standard membership
+						if (member.getStdExpDate() == null) {
+							DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+							LocalDate incDate = LocalDate.now().plusMonths(1);
+							member.setStdExpDate(java.sql.Date.valueOf(incDate));
+							try {
+								gymDAO.updateMember(member);
+								memberUI.getLblPrmstd().setText("Standard: " + dtf.format(incDate));
+							
+							} catch (Exception exc) {
+								setVisible(false);
+								dispose();
+								JOptionPane.showMessageDialog(
+										memberUI,
+										"Error purchasing: "
+												+ exc.getMessage(), "Error",
+										JOptionPane.ERROR_MESSAGE);
+							}
+						}
+						// if member is extending standard membership
+						else {
+							DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+							Date tempDate = member.getStdExpDate();
+							java.sql.Date sqlDate = new java.sql.Date(tempDate.getTime());
+							LocalDate incDate = sqlDate.toLocalDate().plusMonths(1);
+							member.setStdExpDate(java.sql.Date.valueOf(incDate));
+							try {
+								gymDAO.updateMember(member);
+								memberUI.getLblPrmstd().setText("Standard: " + dtf.format(incDate));
+								
+							} catch (Exception exc) {
+								setVisible(false);
+								dispose();
+								JOptionPane.showMessageDialog(
+										memberUI,
+										"Error purchasing: "
+												+ exc.getMessage(), "Error",
+										JOptionPane.ERROR_MESSAGE);
+							}
+						
+						}
+					}
+					else if (chckbxClass.isSelected()) {
+						// get the selected item
+						int row = tableClass.getSelectedRow();
+						
+						// make sure a row is selected
+						if (row < 0) {
+							JOptionPane.showMessageDialog(PurchaseUI.this, "You must select a class", "Error",
+									JOptionPane.ERROR_MESSAGE);				
+							return;
+						}
+						
+						// get the current class
+						try {
+							Group_class tempClass = (Group_class) tableClass.getValueAt(row, MemClassTableModel.OBJECT_COL);
+							
+							saveClass(tempClass);
+						} catch (Exception exc) {
+							setVisible(false);
+							dispose();
+							JOptionPane.showMessageDialog(
+									memberUI,
+									"Error purchasing: "
+											+ exc.getMessage(), "Error",
+									JOptionPane.ERROR_MESSAGE);
+						}
 					}
 				}
+				
+				// close dialog
+				setVisible(false);
+				dispose();
+				
 				// show success message
 				JOptionPane.showMessageDialog(memberUI,
 						"Purchase successful.",
 						"Purchase Successful",
 						JOptionPane.INFORMATION_MESSAGE);
-				// close dialog
-				setVisible(false);
-				dispose();
+				
+				
+				
+//				if (chckbxClass.isSelected() && !memberUI.isPremium() && !rdbtnPremium.isSelected()) {
+//					// get the selected item
+//					int row = tableClass.getSelectedRow();
+//					
+//					// make sure a row is selected
+//					if (row < 0) {
+//						JOptionPane.showMessageDialog(PurchaseUI.this, "You must select a class", "Error",
+//								JOptionPane.ERROR_MESSAGE);				
+//						return;
+//					}
+//					
+//					// get the current class
+//					Group_class tempClass = (Group_class) tableClass.getValueAt(row, MemClassTableModel.OBJECT_COL);
+//					
+//					saveClass(tempClass);
+//				}
+//				if (rdbtnPremium.isSelected() && !chckbxClass.isSelected()) {
+//					if (member.getPrmExpDate() == null) {
+//						DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+//						LocalDate incDate = LocalDate.now().plusMonths(1);
+//						
+//						member.setPrmExpDate(java.sql.Date.valueOf(dtf.format(incDate)));
+//						try {
+//							gymDAO.updateMember(member);
+//							memberUI.getLblPrmstd().setText("Premium: " + dtf.format(incDate));
+//						
+//						} catch (Exception e1) {
+//							e1.printStackTrace();
+//						}
+//					}
+//					else {
+//						DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+//						Date tempDate = member.getPrmExpDate();
+//						java.sql.Date sqlDate = new java.sql.Date(tempDate.getTime());
+//						LocalDate incDate = sqlDate.toLocalDate().plusMonths(1);
+//						tempDate = java.sql.Date.valueOf(incDate);
+//						member.setPrmExpDate(tempDate);
+//						try {
+//							gymDAO.updateMember(member);
+//							memberUI.getLblPrmstd().setText("Premium: " + dtf.format(incDate));
+//							
+//						} catch (Exception e1) {
+//							e1.printStackTrace();
+//						}
+//					}
+//				}
+//				else if (rdbtnStandard.isSelected()) {
+//					if (member.getPrmExpDate() != null) {
+//						return;
+//					}
+//					if (member.getStdExpDate() == null) {
+//						DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+//						LocalDate incDate = LocalDate.now().plusMonths(1);
+//						member.setStdExpDate(java.sql.Date.valueOf(incDate));
+//						try {
+//						gymDAO.updateMember(member);
+//						memberUI.getLblPrmstd().setText("Standard: " + dtf.format(incDate));
+//						
+//						} catch (Exception e1) {
+//							e1.printStackTrace();
+//						}
+//					}
+//					else {
+//						DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+//						Date tempDate = member.getStdExpDate();
+//						java.sql.Date sqlDate = new java.sql.Date(tempDate.getTime());
+//						LocalDate incDate = sqlDate.toLocalDate().plusMonths(1);
+//						member.setStdExpDate(java.sql.Date.valueOf(incDate));
+//						try {
+//							gymDAO.updateMember(member);
+//							memberUI.getLblPrmstd().setText("Standard: " + dtf.format(incDate));
+//							
+//						} catch (Exception e1) {
+//							e1.printStackTrace();
+//						}
+//					
+//					}
+//				}
 			}
 		});
 		

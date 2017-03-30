@@ -21,7 +21,6 @@ import com.toedter.calendar.JDateChooser;
 
 import UI.ManagerUI;
 import core.Employee;
-import core.Member;
 
 import java.awt.event.ActionListener;
 import java.text.ParseException;

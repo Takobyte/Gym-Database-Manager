@@ -46,6 +46,7 @@ public class Login extends JFrame {
 				try {
 					Login frame = new Login();
 					frame.setVisible(true);
+//					frame.setUndecorated(true);
 					
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -114,6 +115,7 @@ public class Login extends JFrame {
 		loginUserComboBox.setToolTipText("");
 		
 		JButton loginBtnSignIn = new JButton("Sign in");
+		loginBtnSignIn.requestFocusInWindow();
 		loginBtnSignIn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (loginUserComboBox.getSelectedItem().equals("Employee") || loginUserComboBox.getSelectedItem().equals("Manager")) {

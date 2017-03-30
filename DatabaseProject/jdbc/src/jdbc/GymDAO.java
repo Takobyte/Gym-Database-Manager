@@ -27,10 +27,11 @@ public class GymDAO {
 		// Get a connection to database
 		String databaseName = "gym";
 		String accountName = "root";
-		String password = "password";
+		String password = "pass";
 		
 		myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/"
-				+ databaseName + "?useSSL=false", 
+				+ databaseName ,
+//				+ "?useSSL=false", 
 				accountName, 
 				password);
 	}
@@ -712,6 +713,26 @@ public class GymDAO {
 		}
 		finally {
 			close(myStmt, myRs);
+		}
+	}
+	
+	public int getMaxAvgClassPurchase() throws SQLException {
+		PreparedStatement myStmt = null;
+		ResultSet myRs = null;
+		int max = 0;
+		try {
+			myStmt = myConn.prepareStatement("Select MAX(amt_paid) "
+					+ "from (SELECT AVG (amt_paid) as amt_paid "
+					+ 		"from class_purchases "
+					+ 		"group by gid) as alias");
+			myRs = myStmt.executeQuery();
+			while (myRs.next()) {
+				max = myRs.getInt(1);
+			}
+			return max;
+			
+		} finally {
+			close (myStmt, myRs);
 		}
 	}
 
