@@ -27,7 +27,7 @@ public class GymDAO {
 		// Get a connection to database
 		String databaseName = "gym";
 		String accountName = "root";
-		String password = "password";
+		String password = "Qw4295915.";
 		
 		myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/"
 				+ databaseName ,

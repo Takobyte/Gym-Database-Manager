@@ -124,13 +124,28 @@ public class Login extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				if (loginUserComboBox.getSelectedItem().equals("Employee") || loginUserComboBox.getSelectedItem().equals("Manager")) {
 					try {
-						eid = Integer.parseInt(loginUserText.getText());
-						System.out.println(eid);
-						Employee employee = new Employee();
-						employee = gymDAO.fetchEmployee(employee,eid);
-						ManagerUI managerUI = new ManagerUI(gymDAO, employee);
-						managerUI.setVisible(true);
-						setVisible(false);
+						String id = loginUserText.getText(); 
+						if (!id.isEmpty()) {
+							eid = Integer.parseInt(loginUserText.getText());
+							Employee employee = new Employee();
+							employee = gymDAO.fetchEmployee(employee,eid);
+							if (employee.getEmp_id() == 0) {
+								JOptionPane.showMessageDialog(Login.this,
+										"Username does not exist.",
+										"Error",
+										JOptionPane.INFORMATION_MESSAGE);
+								return;
+							}
+							ManagerUI managerUI = new ManagerUI(gymDAO, employee);
+							managerUI.setVisible(true);
+							setVisible(false);
+						} else {
+							JOptionPane.showMessageDialog(Login.this,
+									"Username does not exist.",
+									"Error",
+									JOptionPane.INFORMATION_MESSAGE);
+							return;
+						}
 					} catch (Exception e) {
 						JOptionPane.showMessageDialog(Login.this,
 								"Username does not exist.",
@@ -145,17 +160,29 @@ public class Login extends JFrame {
 //					employee.setVisible(true);
 				}
 				else if (loginUserComboBox.getSelectedItem().equals("Member")) {
-//					JOptionPane.showMessageDialog(Login.this,
-//							"Not available at the moment.",
-//							"Error",
-//							JOptionPane.INFORMATION_MESSAGE);
 					try {
-						mid = Integer.parseInt(loginUserText.getText());
-						Member member = new Member(0, "", "", null, "", null, null, 0);
-						member = gymDAO.fetchMember(member,mid);
-						MemberUI memberUI = new MemberUI(gymDAO, member);
-						memberUI.setVisible(true);
-						setVisible(false);
+						String id = loginUserText.getText();
+						if (!id.isEmpty()) {
+							mid = Integer.parseInt(loginUserText.getText());
+							Member member = new Member(0, "", "", null, "", null, null, 0);
+							member = gymDAO.fetchMember(member,mid);
+							if (member.getMid() == 0) {
+								JOptionPane.showMessageDialog(Login.this,
+										"Username does not exist.",
+										"Error",
+										JOptionPane.INFORMATION_MESSAGE);
+								return;
+							}
+							MemberUI memberUI = new MemberUI(gymDAO, member);
+							memberUI.setVisible(true);
+							setVisible(false);
+						} else {
+							JOptionPane.showMessageDialog(Login.this,
+									"Username does not exist.",
+									"Error",
+									JOptionPane.INFORMATION_MESSAGE);
+							return;
+						}
 					} catch (Exception e) {
 						JOptionPane.showMessageDialog(Login.this,
 								"Username does not exist.",

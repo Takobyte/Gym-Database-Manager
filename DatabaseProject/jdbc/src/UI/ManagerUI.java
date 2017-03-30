@@ -57,7 +57,6 @@ public class ManagerUI extends JFrame{
 	private JTable tableManager;
 	private JComboBox comboBoxMng;
 	private JLabel lblInfo;
-	private LinkedList<String> joinQueue;
 	private Boolean isJoinSelected = false;
 	
 	private int eid = 1;
@@ -67,29 +66,8 @@ public class ManagerUI extends JFrame{
 	private GymDAO gymDAO;
 	
 	/**
-	 * Launch the application.
-	 */
-//	public static void managerUI(Employee theEmployee) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					ManagerUI window = new ManagerUI();
-//					employee = theEmployee;
-//					window.managerWindow.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
-
-	/**
 	 * Create the application.
 	 */
-//	public ManagerUI() {
-//		initialize();
-//	}
-	
 	public ManagerUI(GymDAO gymDAO, Employee employee) {
 		this.gymDAO = gymDAO;
 		this.employee = employee;
@@ -1019,21 +997,17 @@ public class ManagerUI extends JFrame{
 		JButton btnJoin = new JButton("Join");
 		btnJoin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				//join tables
-				try {
-					List<Innerjoin_Members_Gym> tempInnerJoin = null;
-					tempInnerJoin = gymDAO.joinTable();
-					Innerjoin model = new Innerjoin(tempInnerJoin);
-					tableManager.setModel(model);
-				} catch (Exception exc) {
-					JOptionPane.showMessageDialog(ManagerUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
+				if (isManager) {
+					//join tables
+					try {
+						List<Innerjoin_Members_Gym> tempInnerJoin = null;
+						tempInnerJoin = gymDAO.joinTable();
+						Innerjoin model = new Innerjoin(tempInnerJoin);
+						tableManager.setModel(model);
+					} catch (Exception exc) {
+						JOptionPane.showMessageDialog(ManagerUI.this, "Error: " + exc, "Error", JOptionPane.ERROR_MESSAGE); 
+					}
 				}
-				
-				joinQueue.clear();
-					
-				
-				
 			}
 		});
 		btnJoin.setBorderPainted(false);
